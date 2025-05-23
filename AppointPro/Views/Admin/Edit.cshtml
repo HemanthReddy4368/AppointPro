@@ -1,0 +1,104 @@
+﻿@model AppointPro.Models.ApplicationUser
+
+@{
+    ViewData["Title"] = "Edit User";
+}
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-6 col-md-8">
+            <div class="card shadow-lg border-0 rounded-4 glass-card">
+                <div class="card-body p-5">
+                    <div class="mb-4 text-center">
+                        <div class="user-avatar-lg mx-auto mb-3">
+                            @if (string.IsNullOrEmpty(Model.ProfilePicture))
+                            {
+                                <span class="avatar-placeholder-lg">@Model.Name?.FirstOrDefault().ToString().ToUpper()</span>
+                            }
+                            else
+                            {
+                                <img src="@Model.ProfilePicture" alt="@Model.Name" class="img-fluid rounded-circle" />
+                            }
+                        </div>
+                        <h2 class="fw-bold mb-1">Edit User</h2>
+                        <p class="text-muted mb-0">Update user details and role</p>
+                    </div>
+                    <form asp-action="Edit" autocomplete="off">
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+                        <input type="hidden" asp-for="UserId" />
+                        <div class="mb-3">
+                            <label asp-for="Email" class="form-label fw-medium">
+                                <i class="bi bi-envelope me-1"></i>Email
+                            </label>
+                            <input asp-for="Email" class="form-control" readonly />
+                            <span asp-validation-for="Email" class="text-danger small"></span>
+                        </div>
+                        <div class="mb-3">
+                            <label asp-for="Name" class="form-label fw-medium">
+                                <i class="bi bi-person me-1"></i>Name
+                            </label>
+                            <input asp-for="Name" class="form-control" />
+                            <span asp-validation-for="Name" class="text-danger small"></span>
+                        </div>
+                        <div class="mb-3">
+                            <label asp-for="Role" class="form-label fw-medium">
+                                <i class="bi bi-person-badge me-1"></i>Role
+                            </label>
+                            <select asp-for="Role" class="form-select" asp-items="Html.GetEnumSelectList<UserRole>()"></select>
+                            <span asp-validation-for="Role" class="text-danger small"></span>
+                        </div>
+                        <div class="d-grid gap-2 mt-4">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="bi bi-save me-2"></i>Save Changes
+                            </button>
+                            <a asp-action="Index" class="btn btn-outline-secondary">
+                                <i class="bi bi-arrow-left me-2"></i>Back to List
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .glass-card {
+        background: rgba(255,255,255,0.85);
+        backdrop-filter: blur(8px);
+        border-radius: 1.5rem;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.08);
+    }
+    .user-avatar-lg {
+        width: 72px;
+        height: 72px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #4f46e5, #0ea5e9);
+        color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+        font-weight: 600;
+        box-shadow: 0 2px 8px rgba(79,70,229,0.15);
+    }
+    .avatar-placeholder-lg {
+        font-size: 2.2rem;
+        font-weight: 700;
+        letter-spacing: 1px;
+    }
+    .form-label {
+        font-size: 1rem;
+    }
+    .btn-lg {
+        padding: 0.75rem 1.5rem;
+        font-size: 1.1rem;
+        font-weight: 500;
+    }
+</style>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

@@ -1,0 +1,95 @@
+﻿@model AppointPro.Models.Hospital
+@{
+    ViewData["Title"] = "Edit Hospital";
+}
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-7 col-md-9">
+            <div class="card shadow-lg border-0 rounded-4 glass-card">
+                <div class="card-body p-5">
+                    <h2 class="fw-bold mb-4 text-center">Edit Hospital</h2>
+                    <form asp-action="Edit" autocomplete="off">
+                        <input type="hidden" asp-for="HospitalId" />
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label asp-for="Name" class="form-label fw-medium">Name</label>
+                                <input asp-for="Name" class="form-control" />
+                                <span asp-validation-for="Name" class="text-danger small"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="PhoneNumber" class="form-label fw-medium">Phone</label>
+                                <input asp-for="PhoneNumber" class="form-control" />
+                                <span asp-validation-for="PhoneNumber" class="text-danger small"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="City" class="form-label fw-medium">City</label>
+                                <input asp-for="City" class="form-control" />
+                                <span asp-validation-for="City" class="text-danger small"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="State" class="form-label fw-medium">State</label>
+                                <input asp-for="State" class="form-control" />
+                                <span asp-validation-for="State" class="text-danger small"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="ZipCode" class="form-label fw-medium">Zip Code</label>
+                                <input asp-for="ZipCode" class="form-control" />
+                                <span asp-validation-for="ZipCode" class="text-danger small"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="LogoUrl" class="form-label fw-medium">Logo URL</label>
+                                <input asp-for="LogoUrl" class="form-control" />
+                                <span asp-validation-for="LogoUrl" class="text-danger small"></span>
+                            </div>
+                            <div class="col-md-12">
+                                <label asp-for="Address" class="form-label fw-medium">Address</label>
+                                <input asp-for="Address" class="form-control" />
+                                <span asp-validation-for="Address" class="text-danger small"></span>
+                            </div>
+                            <div class="col-md-12">
+                                <label asp-for="Description" class="form-label fw-medium">Description</label>
+                                <textarea asp-for="Description" class="form-control" rows="3"></textarea>
+                                <span asp-validation-for="Description" class="text-danger small"></span>
+                            </div>
+                        </div>
+                        <div class="d-grid gap-2 mt-4">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="bi bi-save me-2"></i>Save Changes
+                            </button>
+                            <a asp-action="Index" class="btn btn-outline-secondary">
+                                <i class="bi bi-arrow-left me-2"></i>Back to List
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .glass-card {
+        background: rgba(255,255,255,0.85);
+        backdrop-filter: blur(8px);
+        border-radius: 1.5rem;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.08);
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, #4f46e5, #0ea5e9);
+        border: none;
+        font-weight: 500;
+    }
+
+        .btn-primary:hover {
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.2);
+        }
+</style>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

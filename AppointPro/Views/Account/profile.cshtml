@@ -1,0 +1,129 @@
+﻿@model AppointPro.Models.ApplicationUser
+@{
+    ViewData["Title"] = "My Profile";
+}
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-7 col-md-9">
+            <div class="card shadow-lg border-0 rounded-4 glass-card">
+                <div class="card-body p-5">
+                    <div class="mb-4 text-center">
+                        <div class="user-avatar-lg mx-auto mb-3">
+                            @if (string.IsNullOrEmpty(Model.ProfilePicture))
+                            {
+                                <span class="avatar-placeholder-lg">@Model.Name?.FirstOrDefault().ToString().ToUpper()</span>
+                            }
+                            else
+                            {
+                                <img src="@Model.ProfilePicture" alt="@Model.Name" class="img-fluid rounded-circle" />
+                            }
+                        </div>
+                        <h2 class="fw-bold mb-1">@Model.Name</h2>
+                        <p class="text-muted mb-0">@Model.Email</p>
+                        <span class="role-badge @Model.Role.ToString().ToLower() mt-2">@Model.Role</span>
+                    </div>
+                    @if (ViewBag.Success != null)
+                    {
+                        <div class="alert alert-success text-center">Profile updated successfully!</div>
+                    }
+                    <form asp-action="Profile" method="post" autocomplete="off">
+                        <input type="hidden" asp-for="UserId" />
+                        <input type="hidden" asp-for="Email" />
+                        <input type="hidden" asp-for="Role" />
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label asp-for="Name" class="form-label fw-medium">
+                                    <i class="bi bi-person me-1"></i>Name
+                                </label>
+                                <input asp-for="Name" class="form-control" />
+                                <span asp-validation-for="Name" class="text-danger small"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="PhoneNumber" class="form-label fw-medium">
+                                    <i class="bi bi-telephone me-1"></i>Phone
+                                </label>
+                                <input asp-for="PhoneNumber" class="form-control" />
+                                <span asp-validation-for="PhoneNumber" class="text-danger small"></span>
+                            </div>
+                            <div class="col-md-12">
+                                <label asp-for="Address" class="form-label fw-medium">
+                                    <i class="bi bi-geo-alt me-1"></i>Address
+                                </label>
+                                <input asp-for="Address" class="form-control" />
+                                <span asp-validation-for="Address" class="text-danger small"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="DateOfBirth" class="form-label fw-medium">
+                                    <i class="bi bi-calendar me-1"></i>Date of Birth
+                                </label>
+                                <input asp-for="DateOfBirth" class="form-control" type="date" />
+                                <span asp-validation-for="DateOfBirth" class="text-danger small"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="Gender" class="form-label fw-medium">
+                                    <i class="bi bi-gender-ambiguous me-1"></i>Gender
+                                </label>
+                                <select asp-for="Gender" class="form-select">
+                                    <option value="">Select</option>
+                                    <option value="Male" selected="@("Male" == Model.Gender)">Male</option>
+                                    <option value="Female" selected="@("Female" == Model.Gender)">Female</option>
+                                    <option value="Other" selected="@("Other" == Model.Gender)">Other</option>
+                                </select>
+                                <span asp-validation-for="Gender" class="text-danger small"></span>
+                            </div>
+                        </div>
+                        <div class="d-grid gap-2 mt-4">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="bi bi-save me-2"></i>Save Changes
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .glass-card {
+        background: rgba(255,255,255,0.85);
+        backdrop-filter: blur(8px);
+        border-radius: 1.5rem;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.08);
+    }
+    .user-avatar-lg {
+        width: 72px;
+        height: 72px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #4f46e5, #0ea5e9);
+        color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+        font-weight: 600;
+        box-shadow: 0 2px 8px rgba(79,70,229,0.15);
+    }
+    .avatar-placeholder-lg {
+        font-size: 2.2rem;
+        font-weight: 700;
+        letter-spacing: 1px;
+    }
+    .role-badge {
+        padding: 0.25rem 0.75rem;
+        border-radius: 2rem;
+        font-size: 0.875rem;
+        font-weight: 500;
+        background: #dbeafe;
+        color: #1e40af;
+        margin-top: 0.5rem;
+        display: inline-block;
+    }
+</style>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

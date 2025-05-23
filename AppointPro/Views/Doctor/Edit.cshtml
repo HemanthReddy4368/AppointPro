@@ -1,0 +1,114 @@
+﻿@model AppointPro.Models.Doctor
+@{
+    ViewData["Title"] = "Edit Doctor";
+    var hospitals = ViewBag.Hospitals as List<AppointPro.Models.Hospital>;
+    var users = ViewBag.Users as List<AppointPro.Models.ApplicationUser>;
+}
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-7 col-md-9">
+            <div class="card shadow-lg border-0 rounded-4 glass-card">
+                <div class="card-body p-5">
+                    <h2 class="fw-bold mb-4 text-center">Edit Doctor</h2>
+                    <form asp-action="Edit" autocomplete="off">
+                        <input type="hidden" asp-for="DoctorId" />
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+                        <div class="row g-3">
+                            <div class="col-md-12">
+                                <label asp-for="UserId" class="form-label fw-medium">User</label>
+                                <select asp-for="UserId" class="form-select">
+                                    <option value="">Select User</option>
+                                    @foreach (var user in users)
+                                    {
+                                        <option value="@user.UserId">@user.Name (@user.Email)</option>
+                                    }
+                                </select>
+                                <span asp-validation-for="UserId" class="text-danger small"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="Name" class="form-label fw-medium">Name</label>
+                                <input asp-for="Name" class="form-control" />
+                                <span asp-validation-for="Name" class="text-danger small"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="Specialization" class="form-label fw-medium">Specialization</label>
+                                <input asp-for="Specialization" class="form-control" />
+                                <span asp-validation-for="Specialization" class="text-danger small"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="Qualifications" class="form-label fw-medium">Qualifications</label>
+                                <input asp-for="Qualifications" class="form-control" />
+                                <span asp-validation-for="Qualifications" class="text-danger small"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="LanguagesSpoken" class="form-label fw-medium">Languages</label>
+                                <input asp-for="LanguagesSpoken" class="form-control" />
+                                <span asp-validation-for="LanguagesSpoken" class="text-danger small"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="ConsultationFee" class="form-label fw-medium">Consultation Fee</label>
+                                <input asp-for="ConsultationFee" class="form-control" />
+                                <span asp-validation-for="ConsultationFee" class="text-danger small"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="ProfilePicture" class="form-label fw-medium">Profile Picture URL</label>
+                                <input asp-for="ProfilePicture" class="form-control" />
+                                <span asp-validation-for="ProfilePicture" class="text-danger small"></span>
+                            </div>
+                            <div class="col-md-12">
+                                <label asp-for="Bio" class="form-label fw-medium">Bio</label>
+                                <textarea asp-for="Bio" class="form-control" rows="3"></textarea>
+                                <span asp-validation-for="Bio" class="text-danger small"></span>
+                            </div>
+                            <div class="col-md-12">
+                                <label asp-for="HospitalId" class="form-label fw-medium">Hospital</label>
+                                <select asp-for="HospitalId" class="form-select">
+                                    <option value="">Select Hospital</option>
+                                    @foreach (var hospital in hospitals)
+                                    {
+                                        <option value="@hospital.HospitalId">@hospital.Name (@hospital.City)</option>
+                                    }
+                                </select>
+                                <span asp-validation-for="HospitalId" class="text-danger small"></span>
+                            </div>
+                        </div>
+                        <div class="d-grid gap-2 mt-4">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="bi bi-save me-2"></i>Save Changes
+                            </button>
+                            <a asp-action="Index" class="btn btn-outline-secondary">
+                                <i class="bi bi-arrow-left me-2"></i>Back to List
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .glass-card {
+        background: rgba(255,255,255,0.85);
+        backdrop-filter: blur(8px);
+        border-radius: 1.5rem;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.08);
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, #4f46e5, #0ea5e9);
+        border: none;
+        font-weight: 500;
+    }
+
+        .btn-primary:hover {
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.2);
+        }
+</style>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

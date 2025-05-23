@@ -1,0 +1,82 @@
+﻿@model IEnumerable<AppointPro.Models.Hospital>
+@{
+    ViewData["Title"] = "Hospitals";
+}
+
+<div class="admin-container glass-card p-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="display-6 mb-1">Hospitals</h1>
+            <p class="text-muted">Manage hospital records</p>
+        </div>
+        <a asp-action="Create" class="btn btn-primary d-flex align-items-center gap-2">
+            <i class="bi bi-plus-circle"></i> Add Hospital
+        </a>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-hover align-middle">
+            <thead class="table-light">
+                <tr>
+                    <th>Name</th>
+                    <th>City</th>
+                    <th>Phone</th>
+                    <th>Created</th>
+                    <th class="text-end">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var hospital in Model)
+                {
+                    <tr>
+                        <td>
+                            <div class="d-flex align-items-center gap-2">
+                                @if (!string.IsNullOrEmpty(hospital.LogoUrl))
+                                {
+                                    <img src="@hospital.LogoUrl" alt="@hospital.Name" style="width:36px;height:36px;border-radius:8px;object-fit:cover;" />
+                                }
+                                <span class="fw-medium">@hospital.Name</span>
+                            </div>
+                        </td>
+                        <td>@hospital.City</td>
+                        <td>@hospital.PhoneNumber</td>
+                        <td>@hospital.CreatedAt.ToString("MMM dd, yyyy")</td>
+                        <td class="text-end">
+                            <a asp-action="Edit" asp-route-id="@hospital.HospitalId" class="btn btn-sm btn-outline-primary me-1">
+                                <i class="bi bi-pencil"></i>
+                            </a>
+                            <a asp-action="Delete" asp-route-id="@hospital.HospitalId" class="btn btn-sm btn-outline-danger">
+                                <i class="bi bi-trash"></i>
+                            </a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<style>
+    .admin-container {
+        background: white;
+        border-radius: 1rem;
+        box-shadow: 0 0 20px rgba(0,0,0,0.05);
+    }
+
+    .glass-card {
+        background: rgba(255,255,255,0.85);
+        backdrop-filter: blur(8px);
+        border-radius: 1.5rem;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.08);
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, #4f46e5, #0ea5e9);
+        border: none;
+        font-weight: 500;
+    }
+
+        .btn-primary:hover {
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.2);
+        }
+</style>
