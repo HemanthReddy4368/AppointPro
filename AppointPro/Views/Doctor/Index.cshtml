@@ -19,6 +19,7 @@
             <thead class="table-light">
                 <tr>
                     <th>Name</th>
+                    <th>Email</th>
                     <th>Specialization</th>
                     <th>Hospital</th>
                     <th>Fee</th>
@@ -39,6 +40,7 @@
                                 <span class="fw-medium">@doctor.Name</span>
                             </div>
                         </td>
+                        <td>@doctor.Email</td>
                         <td>@doctor.Specialization</td>
                         <td>@doctor.Hospital?.Name</td>
                         <td>
@@ -74,18 +76,21 @@
         border-radius: 1rem;
         box-shadow: 0 0 20px rgba(0,0,0,0.05);
     }
+
     .glass-card {
         background: rgba(255,255,255,0.85);
         backdrop-filter: blur(8px);
         border-radius: 1.5rem;
         box-shadow: 0 8px 32px rgba(0,0,0,0.08);
     }
+
     .btn-primary {
         background: linear-gradient(135deg, #4f46e5, #0ea5e9);
         border: none;
         font-weight: 500;
     }
-    .btn-primary:hover {
-        box-shadow: 0 4px 12px rgba(79, 70, 229, 0.2);
-    }
+
+        .btn-primary:hover {
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.2);
+        }
 </style>

@@ -1,6 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using AppointPro.Models;
 
 namespace AppointPro.Models
 {
@@ -8,12 +7,6 @@ namespace AppointPro.Models
     {
         [Key]
         public int DoctorId { get; set; }
-
-        [Required]
-        public int UserId { get; set; } // Link to ApplicationUser
-
-        [ForeignKey("UserId")]
-        public ApplicationUser User { get; set; }
 
         [Required]
         public int HospitalId { get; set; }
@@ -24,6 +17,15 @@ namespace AppointPro.Models
         [Required]
         [StringLength(100)]
         public string Name { get; set; }
+
+        [Required]
+        [EmailAddress]
+        [StringLength(100)]
+        public string Email { get; set; }
+
+        [Phone]
+        [StringLength(20)]
+        public string PhoneNumber { get; set; }
 
         [StringLength(100)]
         public string Specialization { get; set; }
@@ -44,5 +46,25 @@ namespace AppointPro.Models
         public string ProfilePicture { get; set; }
 
         public string Bio { get; set; }
+
+        [Required]
+        [Display(Name = "Start Time")]
+        [DataType(DataType.Time)]
+        public TimeSpan StartTime { get; set; } = new TimeSpan(8, 30, 0); // 8:30 AM default
+
+        [Required]
+        [Display(Name = "End Time")]
+        [DataType(DataType.Time)]
+        public TimeSpan EndTime { get; set; } = new TimeSpan(15, 30, 0); // 3:30 PM default
+
+        [Required]
+        [Display(Name = "Slots Per Day")]
+        [Range(1, 20)]
+        public int SlotsPerDay { get; set; } = 7; // Default: 7 slots (1 hour each)
+
+        [Required]
+        [Display(Name = "Slot Duration (minutes)")]
+        [Range(15, 120)]
+        public int SlotDurationMinutes { get; set; } = 60; // Default: 60 minutes
     }
 }

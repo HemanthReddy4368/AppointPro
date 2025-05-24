@@ -1,0 +1,79 @@
+﻿@model AppointPro.Models.Payment
+@{
+    ViewData["Title"] = "Payment Confirmation";
+}
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-6 col-md-8">
+            <div class="card shadow-lg border-0 rounded-4 glass-card">
+                <div class="card-body p-5 text-center">
+                    <div class="mb-4">
+                        <div class="bg-success text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                            <i class="bi bi-check-lg" style="font-size: 3rem;"></i>
+                        </div>
+                        <h2 class="fw-bold mb-2">Payment Successful!</h2>
+                        <p class="text-muted">Your appointment has been confirmed.</p>
+                    </div>
+
+                    <div class="card bg-light mb-4">
+                        <div class="card-body text-start">
+                            <div class="row mb-2">
+                                <div class="col-5 text-muted">Transaction ID:</div>
+                                <div class="col-7 fw-medium">@Model.TransactionId</div>
+                            </div>
+                            <div class="row mb-2">
+                                <div class="col-5 text-muted">Amount Paid:</div>
+                                <div class="col-7 fw-medium">@Model.Amount.ToString("C")</div>
+                            </div>
+                            <div class="row mb-2">
+                                <div class="col-5 text-muted">Date & Time:</div>
+                                <div class="col-7 fw-medium">@Model.PaymentDate.ToString("MMM dd, yyyy h:mm tt")</div>
+                            </div>
+                            <div class="row mb-2">
+                                <div class="col-5 text-muted">Doctor:</div>
+                                <div class="col-7 fw-medium">@Model.Appointment.Doctor.Name</div>
+                            </div>
+                            <div class="row mb-2">
+                                <div class="col-5 text-muted">Hospital:</div>
+                                <div class="col-7 fw-medium">@Model.Appointment.Doctor.Hospital?.Name</div>
+                            </div>
+                            <div class="row mb-2">
+                                <div class="col-5 text-muted">Appointment:</div>
+                                <div class="col-7 fw-medium">@Model.Appointment.AppointmentDate.ToString("MMM dd, yyyy h:mm tt")</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-grid gap-2">
+                        <a asp-controller="Appointment" asp-action="Index" class="btn btn-primary btn-lg">
+                            <i class="bi bi-calendar-check me-2"></i>View My Appointments
+                        </a>
+                        <a asp-controller="Home" asp-action="Index" class="btn btn-outline-secondary">
+                            <i class="bi bi-house me-2"></i>Back to Home
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .glass-card {
+        background: rgba(255,255,255,0.85);
+        backdrop-filter: blur(8px);
+        border-radius: 1.5rem;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.08);
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, #4f46e5, #0ea5e9);
+        border: none;
+        font-weight: 500;
+    }
+
+        .btn-primary:hover {
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.2);
+        }
+</style>

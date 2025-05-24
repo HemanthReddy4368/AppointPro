@@ -1,0 +1,1285 @@
+﻿@model AppointPro.Models.Appointment
+
+@{
+    ViewData["Title"] = "Book Appointment";
+    var hospitals = ViewBag.Hospitals as List<AppointPro.Models.Hospital>;
+    var doctors = ViewBag.Doctors as List<AppointPro.Models.Doctor>;
+}
+
+<div class="appointment-booking-page py-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-9 col-md-11">
+                <!-- Progress Indicator -->
+                <div class="booking-progress mb-4" data-aos="fade-down">
+                    <div class="progress-container">
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="progressFill"></div>
+                        </div>
+                        <div class="progress-steps">
+                            <div class="progress-step active" data-step="1">
+                                <div class="step-icon">
+                                    <i class="bi bi-hospital"></i>
+                                </div>
+                                <div class="step-label">Select Provider</div>
+                            </div>
+                            <div class="progress-step" data-step="2">
+                                <div class="step-icon">
+                                    <i class="bi bi-calendar-date"></i>
+                                </div>
+                                <div class="step-label">Choose Date</div>
+                            </div>
+                            <div class="progress-step" data-step="3">
+                                <div class="step-icon">
+                                    <i class="bi bi-clock"></i>
+                                </div>
+                                <div class="step-label">Select Time</div>
+                            </div>
+                            <div class="progress-step" data-step="4">
+                                <div class="step-icon">
+                                    <i class="bi bi-check-circle"></i>
+                                </div>
+                                <div class="step-label">Confirm</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Booking Card -->
+                <div class="card shadow-lg border-0 rounded-4 glass-card" data-aos="zoom-in" data-aos-delay="200">
+                    <div class="card-header bg-transparent border-0 pt-4 px-5">
+                        <h2 class="fw-bold text-center mb-0">
+                            <span class="text-gradient">Book Your Appointment</span>
+                        </h2>
+                        <p class="text-center text-muted mt-2">Schedule a visit with our healthcare professionals</p>
+                    </div>
+                    <div class="card-body p-5">
+                        <form asp-action="Create" id="appointmentForm">
+                            <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+                            <!-- Step 1: Provider Selection -->
+                            <div class="booking-step" id="step1">
+                                <div class="step-header mb-4" data-aos="fade-right">
+                                    <h4 class="fw-bold">
+                                        <i class="bi bi-1-circle-fill me-2 text-primary"></i>
+                                        Choose Your Provider
+                                    </h4>
+                                    <p class="text-muted">Select how you'd like to book your appointment</p>
+                                </div>
+
+                                <div class="booking-type-selector mb-4" data-aos="fade-up">
+                                    <div class="row g-3">
+                                        <div class="col-md-6">
+                                            <label class="booking-type-card" for="byHospital">
+                                                <input type="radio" id="byHospital" name="bookingType" value="hospital" checked />
+                                                <div class="card-content">
+                                                    <div class="icon-container">
+                                                        <i class="bi bi-hospital"></i>
+                                                    </div>
+                                                    <h5>By Hospital</h5>
+                                                    <p>Choose a hospital first, then select from available doctors</p>
+                                                </div>
+                                            </label>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="booking-type-card" for="byDoctor">
+                                                <input type="radio" id="byDoctor" name="bookingType" value="doctor" />
+                                                <div class="card-content">
+                                                    <div class="icon-container">
+                                                        <i class="bi bi-person-badge"></i>
+                                                    </div>
+                                                    <h5>By Doctor</h5>
+                                                    <p>Choose your preferred doctor directly</p>
+                                                </div>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- By Hospital -->
+                                <div id="byHospitalSection" data-aos="fade-up" data-aos-delay="100">
+                                    <div class="form-group mb-4">
+                                        <label class="form-label fw-medium">
+                                            <i class="bi bi-hospital me-2 text-primary"></i>Select Hospital
+                                        </label>
+                                        <select id="HospitalId" name="hospitalId" class="form-select form-select-lg">
+                                            <option value="">Choose a hospital</option>
+                                            @foreach (var hospital in hospitals)
+                                            {
+                                                <option value="@hospital.HospitalId">@hospital.Name</option>
+                                            }
+                                        </select>
+                                        <div class="form-text">Select the hospital where you'd like to receive care</div>
+                                    </div>
+                                    <div class="form-group mb-4">
+                                        <label class="form-label fw-medium">
+                                            <i class="bi bi-person-badge me-2 text-primary"></i>Select Doctor
+                                        </label>
+                                        <select id="DoctorIdByHospital" name="doctorId" class="form-select form-select-lg">
+                                            <option value="">First select a hospital</option>
+                                        </select>
+                                        <div class="form-text">Choose from available doctors at the selected hospital</div>
+                                    </div>
+                                </div>
+
+                                <!-- By Doctor -->
+                                <div id="byDoctorSection" style="display:none;" data-aos="fade-up" data-aos-delay="100">
+                                    <div class="form-group mb-4">
+                                        <label class="form-label fw-medium">
+                                            <i class="bi bi-person-badge me-2 text-primary"></i>Select Doctor
+                                        </label>
+                                        <select id="DoctorId" name="doctorId" class="form-select form-select-lg">
+                                            <option value="">Choose a doctor</option>
+                                            @foreach (var doctor in doctors)
+                                            {
+                                                <option value="@doctor.DoctorId" data-hospital="@doctor.HospitalId">
+                                                    @doctor.Name - @doctor.Specialization
+                                                    @if (doctor.Hospital != null)
+                                                    {
+                                                        <text>(@doctor.Hospital.Name)</text>
+                                                    }
+                                                </option>
+                                            }
+                                        </select>
+                                        <div class="form-text">Select your preferred healthcare provider</div>
+                                    </div>
+                                    <div class="form-group mb-4">
+                                        <label class="form-label fw-medium">
+                                            <i class="bi bi-hospital me-2 text-primary"></i>Hospital
+                                        </label>
+                                        <input id="HospitalName" class="form-control form-control-lg" readonly placeholder="Hospital will be displayed here" />
+                                        <input type="hidden" id="HospitalIdByDoctor" name="hospitalId" />
+                                        <div class="form-text">This is the hospital where the selected doctor practices</div>
+                                    </div>
+                                </div>
+
+                                <div class="d-flex justify-content-end mt-4" data-aos="fade-up" data-aos-delay="200">
+                                    <button type="button" class="btn btn-primary btn-lg next-step" data-next="2">
+                                        Continue to Date Selection
+                                        <i class="bi bi-arrow-right ms-2"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Step 2: Date Selection -->
+                            <div class="booking-step" id="step2" style="display:none;">
+                                <div class="step-header mb-4" data-aos="fade-right">
+                                    <h4 class="fw-bold">
+                                        <i class="bi bi-2-circle-fill me-2 text-primary"></i>
+                                        Select Appointment Date
+                                    </h4>
+                                    <p class="text-muted">Choose a convenient date for your visit</p>
+                                </div>
+
+                                <div class="form-group mb-4" data-aos="fade-up">
+                                    <label class="form-label fw-medium">
+                                        <i class="bi bi-calendar-date me-2 text-primary"></i>Appointment Date
+                                    </label>
+                                    <input type="date" id="AppointmentDate" name="appointmentDate" class="form-control form-control-lg" min="@DateTime.Today.ToString("yyyy-MM-dd")" />
+                                    <div class="form-text">Select a date for your appointment (available dates start from today)</div>
+                                </div>
+
+                                <div class="date-selection-helper mt-4 mb-3" data-aos="fade-up" data-aos-delay="100">
+                                    <h6 class="fw-bold mb-3">Quick Select:</h6>
+                                    <div class="quick-dates">
+                                        @for (int i = 0; i < 5; i++)
+                                        {
+                                            var date = DateTime.Today.AddDays(i);
+                                            <button type="button" class="btn btn-outline-primary quick-date" data-date="@date.ToString("yyyy-MM-dd")">
+                                                <div class="day-name">@date.ToString("ddd")</div>
+                                                <div class="day-number">@date.Day</div>
+                                                <div class="month">@date.ToString("MMM")</div>
+                                            </button>
+                                        }
+                                    </div>
+                                </div>
+
+                                <div class="selected-info mt-4 mb-3" data-aos="fade-up" data-aos-delay="200">
+                                    <div class="card bg-light border-0 rounded-3">
+                                        <div class="card-body">
+                                            <h6 class="fw-bold mb-3">Your Selection:</h6>
+                                            <div class="row g-3">
+                                                <div class="col-md-6">
+                                                    <div class="d-flex align-items-center">
+                                                        <div class="icon-circle bg-primary-soft me-3">
+                                                            <i class="bi bi-person-badge"></i>
+                                                        </div>
+                                                        <div>
+                                                            <div class="text-muted small">Doctor</div>
+                                                            <div class="fw-medium" id="selectedDoctorDisplay">Not selected yet</div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="d-flex align-items-center">
+                                                        <div class="icon-circle bg-primary-soft me-3">
+                                                            <i class="bi bi-hospital"></i>
+                                                        </div>
+                                                        <div>
+                                                            <div class="text-muted small">Hospital</div>
+                                                            <div class="fw-medium" id="selectedHospitalDisplay">Not selected yet</div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="d-flex justify-content-between mt-4" data-aos="fade-up" data-aos-delay="300">
+                                    <button type="button" class="btn btn-outline-secondary btn-lg prev-step" data-prev="1">
+                                        <i class="bi bi-arrow-left me-2"></i>
+                                        Back
+                                    </button>
+                                    <button type="button" class="btn btn-primary btn-lg next-step" data-next="3">
+                                        Continue to Time Selection
+                                        <i class="bi bi-arrow-right ms-2"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Step 3: Time Selection -->
+                            <div class="booking-step" id="step3" style="display:none;">
+                                <div class="step-header mb-4" data-aos="fade-right">
+                                    <h4 class="fw-bold">
+                                        <i class="bi bi-3-circle-fill me-2 text-primary"></i>
+                                        Select Time Slot
+                                    </h4>
+                                    <p class="text-muted">Choose an available time for your appointment</p>
+                                </div>
+
+                                <div class="form-group mb-4" data-aos="fade-up">
+                                    <label class="form-label fw-medium">
+                                        <i class="bi bi-clock me-2 text-primary"></i>Available Time Slots
+                                    </label>
+                                    <select id="TimeSlot" name="timeSlot" class="form-select form-select-lg" required>
+                                        <option value="">Select a time slot</option>
+                                        <!-- Options will be populated by JS -->
+                                    </select>
+                                    <div class="form-text">Choose from available time slots for the selected date</div>
+                                    <div id="noSlotsMessage" class="alert alert-warning mt-3" style="display:none;">
+                                        <i class="bi bi-exclamation-triangle me-2"></i>
+                                        No available slots for this date. Please select another date.
+                                    </div>
+                                </div>
+
+                                <div class="time-slots-visual mt-4" data-aos="fade-up" data-aos-delay="100">
+                                    <h6 class="fw-bold mb-3">Quick Select Time:</h6>
+                                    <div class="time-slots-container" id="visualTimeSlots">
+                                        <!-- Visual time slots will be populated by JS -->
+                                        <div class="placeholder-message text-center py-4 text-muted">
+                                            <i class="bi bi-calendar-date fs-3 d-block mb-2"></i>
+                                            Please select a date to view available time slots
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="selected-info mt-4 mb-3" data-aos="fade-up" data-aos-delay="200">
+                                    <div class="card bg-light border-0 rounded-3">
+                                        <div class="card-body">
+                                            <h6 class="fw-bold mb-3">Your Selection:</h6>
+                                            <div class="row g-3">
+                                                <div class="col-md-4">
+                                                    <div class="d-flex align-items-center">
+                                                        <div class="icon-circle bg-primary-soft me-3">
+                                                            <i class="bi bi-person-badge"></i>
+                                                        </div>
+                                                        <div>
+                                                            <div class="text-muted small">Doctor</div>
+                                                            <div class="fw-medium" id="selectedDoctorDisplay2">Not selected yet</div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <div class="d-flex align-items-center">
+                                                        <div class="icon-circle bg-primary-soft me-3">
+                                                            <i class="bi bi-hospital"></i>
+                                                        </div>
+                                                        <div>
+                                                            <div class="text-muted small">Hospital</div>
+                                                            <div class="fw-medium" id="selectedHospitalDisplay2">Not selected yet</div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <div class="d-flex align-items-center">
+                                                        <div class="icon-circle bg-primary-soft me-3">
+                                                            <i class="bi bi-calendar-date"></i>
+                                                        </div>
+                                                        <div>
+                                                            <div class="text-muted small">Date</div>
+                                                            <div class="fw-medium" id="selectedDateDisplay">Not selected yet</div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="d-flex justify-content-between mt-4" data-aos="fade-up" data-aos-delay="300">
+                                    <button type="button" class="btn btn-outline-secondary btn-lg prev-step" data-prev="2">
+                                        <i class="bi bi-arrow-left me-2"></i>
+                                        Back
+                                    </button>
+                                    <button type="button" class="btn btn-primary btn-lg next-step" data-next="4">
+                                        Continue to Confirmation
+                                        <i class="bi bi-arrow-right ms-2"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Step 4: Confirmation -->
+                            <div class="booking-step" id="step4" style="display:none;">
+                                <div class="step-header mb-4" data-aos="fade-right">
+                                    <h4 class="fw-bold">
+                                        <i class="bi bi-4-circle-fill me-2 text-primary"></i>
+                                        Confirm Your Appointment
+                                    </h4>
+                                    <p class="text-muted">Review your appointment details and add any notes</p>
+                                </div>
+
+                                <div class="appointment-summary mb-4" data-aos="fade-up">
+                                    <div class="card border-0 shadow-sm rounded-4 mb-4">
+                                        <div class="card-body p-4">
+                                            <h5 class="fw-bold mb-3">Appointment Details</h5>
+                                            <div class="row g-3">
+                                                <div class="col-md-6">
+                                                    <div class="detail-item">
+                                                        <div class="detail-label">
+                                                            <i class="bi bi-person-badge text-primary me-2"></i>Doctor
+                                                        </div>
+                                                        <div class="detail-value" id="summaryDoctor">Not selected</div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="detail-item">
+                                                        <div class="detail-label">
+                                                            <i class="bi bi-hospital text-primary me-2"></i>Hospital
+                                                        </div>
+                                                        <div class="detail-value" id="summaryHospital">Not selected</div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="detail-item">
+                                                        <div class="detail-label">
+                                                            <i class="bi bi-calendar-date text-primary me-2"></i>Date
+                                                        </div>
+                                                        <div class="detail-value" id="summaryDate">Not selected</div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="detail-item">
+                                                        <div class="detail-label">
+                                                            <i class="bi bi-clock text-primary me-2"></i>Time
+                                                        </div>
+                                                        <div class="detail-value" id="summaryTime">Not selected</div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-group mb-4" data-aos="fade-up" data-aos-delay="100">
+                                    <label asp-for="Notes" class="form-label fw-medium">
+                                        <i class="bi bi-journal-text me-2 text-primary"></i>Additional Notes
+                                    </label>
+                                    <textarea asp-for="Notes" class="form-control" rows="4" placeholder="Add any special requests or information about your visit (optional)"></textarea>
+                                    <span asp-validation-for="Notes" class="text-danger small"></span>
+                                    <div class="form-text">Share any information that might be helpful for your healthcare provider</div>
+                                </div>
+
+                                <div class="confirmation-message mt-4 mb-4" data-aos="fade-up" data-aos-delay="200">
+                                    <div class="alert alert-info d-flex align-items-center">
+                                        <i class="bi bi-info-circle-fill fs-4 me-3"></i>
+                                        <div>
+                                            <strong>Almost done!</strong> Please review your appointment details above and click "Book Appointment" to confirm.
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="d-flex justify-content-between mt-4" data-aos="fade-up" data-aos-delay="300">
+                                    <button type="button" class="btn btn-outline-secondary btn-lg prev-step" data-prev="3">
+                                        <i class="bi bi-arrow-left me-2"></i>
+                                        Back
+                                    </button>
+                                    <button type="submit" class="btn btn-primary btn-lg">
+                                        <i class="bi bi-calendar-check me-2"></i>Book Appointment
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Main Styles */
+    .appointment-booking-page {
+        min-height: 100vh;
+        background: linear-gradient(135deg, rgba(249, 250, 251, 0.8), rgba(243, 244, 246, 0.8));
+    }
+
+    .text-gradient {
+        background: linear-gradient(90deg, #4f46e5, #0ea5e9);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .glass-card {
+        background: rgba(255, 255, 255, 0.9);
+        backdrop-filter: blur(10px);
+        border-radius: 1.5rem;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+        overflow: hidden;
+        transition: all 0.3s ease;
+    }
+
+    .glass-card:hover {
+        box-shadow: 0 15px 60px rgba(0, 0, 0, 0.12);
+        transform: translateY(-5px);
+    }
+
+    /* Progress Bar */
+    .booking-progress {
+        margin-bottom: 2rem;
+    }
+
+    .progress-container {
+        position: relative;
+        padding: 0 1rem;
+    }
+
+    .progress-bar {
+        height: 4px;
+        background-color: rgba(0, 0, 0, 0.1);
+        border-radius: 2px;
+        position: relative;
+        margin: 2rem 0;
+        z-index: 1;
+    }
+
+    .progress-fill {
+        position: absolute;
+        height: 100%;
+        width: 0%;
+        background: linear-gradient(90deg, #4f46e5, #0ea5e9);
+        border-radius: 2px;
+        transition: width 0.5s ease;
+    }
+
+    .progress-steps {
+        display: flex;
+        justify-content: space-between;
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        transform: translateY(-50%);
+        z-index: 2;
+    }
+
+    .progress-step {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        position: relative;
+        transition: all 0.3s ease;
+    }
+
+    .step-icon {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background-color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.25rem;
+        color: #6b7280;
+        border: 2px solid rgba(0, 0, 0, 0.1);
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+        transition: all 0.3s ease;
+        position: relative;
+        z-index: 3;
+    }
+
+    .step-label {
+        margin-top: 0.5rem;
+        font-size: 0.875rem;
+        font-weight: 500;
+        color: #6b7280;
+        transition: all 0.3s ease;
+        white-space: nowrap;
+    }
+
+    .progress-step.active .step-icon {
+        background: linear-gradient(135deg, #4f46e5, #0ea5e9);
+        color: white;
+        border-color: transparent;
+        box-shadow: 0 8px 16px rgba(79, 70, 229, 0.2);
+        transform: scale(1.1);
+    }
+
+    .progress-step.active .step-label {
+        color: #4f46e5;
+        font-weight: 600;
+    }
+
+    .progress-step.completed .step-icon {
+        background: #10b981;
+        color: white;
+        border-color: transparent;
+    }
+
+    /* Booking Type Selector */
+    .booking-type-selector {
+        margin-bottom: 2rem;
+    }
+
+    .booking-type-card {
+        display: block;
+        position: relative;
+        cursor: pointer;
+        margin-bottom: 0;
+        height: 100%;
+    }
+
+    .booking-type-card input {
+        position: absolute;
+        opacity: 0;
+        cursor: pointer;
+    }
+
+    .booking-type-card .card-content {
+        background: white;
+        border: 2px solid rgba(0, 0, 0, 0.1);
+        border-radius: 1rem;
+        padding: 1.5rem;
+        text-align: center;
+        transition: all 0.3s ease;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .booking-type-card:hover .card-content {
+        border-color: #4f46e5;
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(79, 70, 229, 0.1);
+    }
+
+    .booking-type-card input:checked + .card-content {
+        border-color: #4f46e5;
+        background: rgba(79, 70, 229, 0.05);
+        box-shadow: 0 10px 25px rgba(79, 70, 229, 0.15);
+        transform: translateY(-5px);
+    }
+
+    .booking-type-card .icon-container {
+        width: 70px;
+        height: 70px;
+        border-radius: 50%;
+        background: rgba(79, 70, 229, 0.1);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 1rem;
+        font-size: 1.75rem;
+        color: #4f46e5;
+        transition: all 0.3s ease;
+    }
+
+    .booking-type-card input:checked + .card-content .icon-container {
+        background: linear-gradient(135deg, #4f46e5, #0ea5e9);
+        color: white;
+        transform: scale(1.1) rotate(5deg);
+        box-shadow: 0 10px 20px rgba(79, 70, 229, 0.2);
+    }
+
+    .booking-type-card h5 {
+        margin-bottom: 0.75rem;
+        font-weight: 600;
+    }
+
+    .booking-type-card p {
+        color: #6b7280;
+        font-size: 0.875rem;
+        margin-bottom: 0;
+    }
+
+    /* Form Controls */
+    .form-control, .form-select {
+        padding: 0.75rem 1rem;
+        border-radius: 0.75rem;
+        border: 1px solid rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+    }
+
+    .form-control:focus, .form-select:focus {
+        border-color: #4f46e5;
+        box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.15);
+    }
+
+    .form-control-lg, .form-select-lg {
+        height: calc(3.5rem + 2px);
+        font-size: 1rem;
+    }
+
+    .form-label {
+        margin-bottom: 0.5rem;
+        font-weight: 500;
+        color: #374151;
+    }
+
+    .form-text {
+        color: #6b7280;
+        font-size: 0.875rem;
+        margin-top: 0.5rem;
+    }
+
+    /* Buttons */
+    .btn {
+        border-radius: 0.75rem;
+        padding: 0.75rem 1.5rem;
+        font-weight: 500;
+        transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .btn::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 50%;
+        transform: translate(-50%, -50%);
+        transition: width 0.6s ease, height 0.6s ease;
+    }
+
+    .btn:active::after {
+        width: 300px;
+        height: 300px;
+        opacity: 0;
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, #4f46e5, #0ea5e9);
+        border: none;
+        box-shadow: 0 4px 15px rgba(79, 70, 229, 0.2);
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(79, 70, 229, 0.3);
+    }
+
+    .btn-outline-secondary {
+        border-color: rgba(0, 0, 0, 0.1);
+        color: #6b7280;
+    }
+
+    .btn-outline-secondary:hover {
+        background-color: #f3f4f6;
+        border-color: rgba(0, 0, 0, 0.15);
+        color: #374151;
+        transform: translateY(-3px);
+    }
+
+    /* Quick Date Selection */
+    .quick-dates {
+        display: flex;
+        gap: 0.75rem;
+        overflow-x: auto;
+        padding-bottom: 0.5rem;
+    }
+
+    .quick-date {
+        min-width: 80px;
+        text-align: center;
+        padding: 0.75rem 0.5rem;
+        border-radius: 0.75rem;
+        border: 1px solid rgba(0, 0, 0, 0.1);
+        background: white;
+        transition: all 0.3s ease;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .quick-date:hover {
+        border-color: #4f46e5;
+        transform: translateY(-3px);
+        box-shadow: 0 5px 15px rgba(79, 70, 229, 0.1);
+    }
+
+    .quick-date.active {
+        background: linear-gradient(135deg, #4f46e5, #0ea5e9);
+        color: white;
+        border-color: transparent;
+        box-shadow: 0 5px 15px rgba(79, 70, 229, 0.2);
+    }
+
+    .day-name {
+        font-size: 0.75rem;
+        font-weight: 500;
+        margin-bottom: 0.25rem;
+    }
+
+    .day-number {
+        font-size: 1.5rem;
+        font-weight: 700;
+        line-height: 1;
+        margin-bottom: 0.25rem;
+    }
+
+    .month {
+        font-size: 0.75rem;
+        font-weight: 500;
+    }
+
+    /* Time Slots Visual */
+    .time-slots-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+        margin-top: 1rem;
+    }
+
+    .time-slot-btn {
+        padding: 0.75rem 1rem;
+        border-radius: 0.75rem;
+        border: 1px solid rgba(0, 0, 0, 0.1);
+        background: white;
+        transition: all 0.3s ease;
+        font-weight: 500;
+        min-width: 100px;
+        text-align: center;
+    }
+
+    .time-slot-btn:hover {
+        border-color: #4f46e5;
+        transform: translateY(-3px);
+        box-shadow: 0 5px 15px rgba(79, 70, 229, 0.1);
+    }
+
+    .time-slot-btn.active {
+        background: linear-gradient(135deg, #4f46e5, #0ea5e9);
+        color: white;
+        border-color: transparent;
+        box-shadow: 0 5px 15px rgba(79, 70, 229, 0.2);
+    }
+
+    .time-slot-btn.disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        background: #f3f4f6;
+        border-color: rgba(0, 0, 0, 0.05);
+    }
+
+    .time-slot-btn.disabled:hover {
+        transform: none;
+        box-shadow: none;
+    }
+
+    /* Selected Info */
+    .icon-circle {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.25rem;
+    }
+
+    .bg-primary-soft {
+        background-color: rgba(79, 70, 229, 0.1);
+        color: #4f46e5;
+    }
+
+    /* Appointment Summary */
+    .detail-item {
+        margin-bottom: 1rem;
+    }
+
+    .detail-label {
+        font-size: 0.875rem;
+        color: #6b7280;
+        margin-bottom: 0.25rem;
+    }
+
+    .detail-value {
+        font-weight: 500;
+        color: #111827;
+    }
+
+    /* Responsive Adjustments */
+    @@media (max-width: 768px) {
+        .progress-step .step-label {
+            font-size: 0.75rem;
+        }
+
+        .step-icon {
+            width: 40px;
+            height: 40px;
+            font-size: 1rem;
+        }
+
+        .quick-dates {
+            justify-content: flex-start;
+        }
+
+        .quick-date {
+            min-width: 70px;
+        }
+
+        .btn-lg {
+            padding: 0.625rem 1.25rem;
+            font-size: 0.875rem;
+        }
+    }
+
+    @@media (max-width: 576px) {
+        .progress-steps {
+            position: relative;
+            transform: none;
+            margin-top: 1rem;
+        }
+
+        .progress-bar {
+            margin: 0;
+        }
+
+        .progress-step .step-label {
+            display: none;
+        }
+
+        .step-icon {
+            width: 35px;
+            height: 35px;
+            font-size: 0.875rem;
+        }
+
+        .card-body {
+            padding: 1.5rem;
+        }
+
+        .booking-type-card .icon-container {
+            width: 50px;
+            height: 50px;
+            font-size: 1.25rem;
+        }
+
+        .booking-type-card h5 {
+            font-size: 1rem;
+        }
+
+        .booking-type-card p {
+            font-size: 0.75rem;
+        }
+    }
+</style>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize AOS animations
+            if (typeof AOS !== 'undefined') {
+                AOS.init({
+                    duration: 800,
+                    easing: 'ease-out',
+                    once: true
+                });
+            }
+
+            // Step Navigation
+            const steps = document.querySelectorAll('.booking-step');
+            const progressSteps = document.querySelectorAll('.progress-step');
+            const progressFill = document.getElementById('progressFill');
+            let currentStep = 1;
+
+            // Next step buttons
+            document.querySelectorAll('.next-step').forEach(button => {
+                button.addEventListener('click', function() {
+                    const nextStep = parseInt(this.getAttribute('data-next'));
+                    
+                    // Validate current step before proceeding
+                    if (validateStep(currentStep)) {
+                        goToStep(nextStep);
+                    }
+                });
+            });
+
+            // Previous step buttons
+            document.querySelectorAll('.prev-step').forEach(button => {
+                button.addEventListener('click', function() {
+                    const prevStep = parseInt(this.getAttribute('data-prev'));
+                    goToStep(prevStep);
+                });
+            });
+
+            // Function to go to a specific step
+            function goToStep(stepNumber) {
+                // Hide all steps
+                steps.forEach(step => {
+                    step.style.display = 'none';
+                });
+                
+                // Show the target step
+                document.getElementById('step' + stepNumber).style.display = 'block';
+                
+                // Update progress bar
+                updateProgress(stepNumber);
+                
+                // Update current step
+                currentStep = stepNumber;
+                
+                // Scroll to top of form
+                document.querySelector('.card').scrollIntoView({ behavior: 'smooth', block: 'start' });
+                
+                // Refresh AOS animations
+                if (typeof AOS !== 'undefined') {
+                    AOS.refresh();
+                }
+                
+                // Update selection displays
+                updateSelectionDisplays();
+            }
+
+            // Function to update progress bar
+            function updateProgress(step) {
+                // Calculate progress percentage
+                const progress = (step - 1) / (progressSteps.length - 1) * 100;
+                progressFill.style.width = progress + '%';
+                
+                // Update step indicators
+                progressSteps.forEach((stepEl, index) => {
+                    if (index + 1 < step) {
+                        stepEl.classList.add('completed');
+                        stepEl.classList.remove('active');
+                    } else if (index + 1 === step) {
+                        stepEl.classList.add('active');
+                        stepEl.classList.remove('completed');
+                    } else {
+                        stepEl.classList.remove('active', 'completed');
+                    }
+                });
+            }
+
+            // Function to validate each step
+            function validateStep(step) {
+                switch(step) {
+                    case 1:
+                        // Check if doctor is selected
+                        const doctorId = document.getElementById('byHospitalSection').style.display === 'none' 
+                            ? document.getElementById('DoctorId').value 
+                            : document.getElementById('DoctorIdByHospital').value;
+                        
+                        if (!doctorId) {
+                            alert('Please select a doctor before proceeding.');
+                            return false;
+                        }
+                        return true;
+                        
+                    case 2:
+                        // Check if date is selected
+                        const date = document.getElementById('AppointmentDate').value;
+                        if (!date) {
+                            alert('Please select a date before proceeding.');
+                            return false;
+                        }
+                        return true;
+                        
+                    case 3:
+                        // Check if time slot is selected
+                        const timeSlot = document.getElementById('TimeSlot').value;
+                        if (!timeSlot) {
+                            alert('Please select a time slot before proceeding.');
+                            return false;
+                        }
+                        return true;
+                        
+                    default:
+                        return true;
+                }
+            }
+
+            // Toggle between booking types
+            document.querySelectorAll('input[name="bookingType"]').forEach(radio => {
+                radio.addEventListener('change', function() {
+                    if (this.value === "hospital") {
+                        document.getElementById('byHospitalSection').style.display = '';
+                        document.getElementById('byDoctorSection').style.display = 'none';
+                    } else {
+                        document.getElementById('byHospitalSection').style.display = 'none';
+                        document.getElementById('byDoctorSection').style.display = '';
+                    }
+                });
+            });
+
+            // Quick date selection
+            document.querySelectorAll('.quick-date').forEach(dateBtn => {
+                dateBtn.addEventListener('click', function() {
+                    const dateValue = this.getAttribute('data-date');
+                    document.getElementById('AppointmentDate').value = dateValue;
+                    
+                    // Update active state
+                    document.querySelectorAll('.quick-date').forEach(btn => {
+                        btn.classList.remove('active');
+                    });
+                    this.classList.add('active');
+                    
+                    // Trigger date change event
+                    const event = new Event('change');
+                    document.getElementById('AppointmentDate').dispatchEvent(event);
+                });
+            });
+
+            // Update time slots when doctor or date changes
+            document.getElementById('DoctorIdByHospital').addEventListener('change', updateTimeSlots);
+            document.getElementById('DoctorId').addEventListener('change', function() {
+                updateTimeSlots();
+                updateHospitalByDoctor();
+            });
+            document.getElementById('AppointmentDate').addEventListener('change', updateTimeSlots);
+
+            // Function to update time slots
+            function updateTimeSlots() {
+                const doctorId = document.getElementById('byHospitalSection').style.display === 'none' 
+                    ? document.getElementById('DoctorId').value 
+                    : document.getElementById('DoctorIdByHospital').value;
+                
+                const date = document.getElementById('AppointmentDate').value;
+                const timeSlotSelect = document.getElementById('TimeSlot');
+                const noSlotsMessage = document.getElementById('noSlotsMessage');
+                const visualTimeSlots = document.getElementById('visualTimeSlots');
+                
+                // Clear existing options
+                timeSlotSelect.innerHTML = '<option value="">Select a time slot</option>';
+                timeSlotSelect.disabled = true;
+                noSlotsMessage.style.display = 'none';
+                
+                // Clear visual time slots
+                visualTimeSlots.innerHTML = '<div class="placeholder-message text-center py-4 text-muted"><i class="bi bi-clock fs-3 d-block mb-2"></i>Loading available time slots...</div>';
+                
+                if (!doctorId || !date) {
+                    visualTimeSlots.innerHTML = '<div class="placeholder-message text-center py-4 text-muted"><i class="bi bi-calendar-date fs-3 d-block mb-2"></i>Please select a doctor and date to view available time slots</div>';
+                    return;
+                }
+                
+                // Fetch available slots from server
+                fetch(`/Appointment/GetAvailableSlots?doctorId=${doctorId}&date=${date}`)
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        return response.json();
+                    })
+                    .then(slots => {
+                        timeSlotSelect.disabled = false;
+                        
+                        if (slots.length === 0) {
+                            noSlotsMessage.style.display = 'block';
+                            visualTimeSlots.innerHTML = '<div class="placeholder-message text-center py-4 text-danger"><i class="bi bi-exclamation-circle fs-3 d-block mb-2"></i>No available slots for this date. Please select another date.</div>';
+                            return;
+                        }
+                        
+                        // Clear visual time slots container
+                        visualTimeSlots.innerHTML = '';
+                        
+                        // Add slots to select and visual container
+                        slots.forEach(slot => {
+                            // Add to dropdown
+                            const option = document.createElement('option');
+                            option.value = slot.dateTime;
+                            option.textContent = slot.displayTime;
+                            timeSlotSelect.appendChild(option);
+                            
+                            // Add to visual time slots
+                            const timeSlotBtn = document.createElement('button');
+                            timeSlotBtn.type = 'button';
+                            timeSlotBtn.className = 'time-slot-btn';
+                            timeSlotBtn.textContent = slot.displayTime;
+                            timeSlotBtn.setAttribute('data-value', slot.dateTime);
+                            timeSlotBtn.addEventListener('click', function() {
+                                // Update dropdown
+                                timeSlotSelect.value = this.getAttribute('data-value');
+                                
+                                // Update active state
+                                document.querySelectorAll('.time-slot-btn').forEach(btn => {
+                                    btn.classList.remove('active');
+                                });
+                                this.classList.add('active');
+                                
+                                // Trigger change event
+                                const event = new Event('change');
+                                timeSlotSelect.dispatchEvent(event);
+                            });
+                            
+                            visualTimeSlots.appendChild(timeSlotBtn);
+                        });
+                        
+                        // Add animation to time slots
+                        document.querySelectorAll('.time-slot-btn').forEach((btn, index) => {
+                            btn.style.opacity = '0';
+                            btn.style.transform = 'translateY(20px)';
+                            
+                            setTimeout(() => {
+                                btn.style.transition = 'all 0.3s ease';
+                                btn.style.opacity = '1';
+                                btn.style.transform = 'translateY(0)';
+                            }, 50 * index);
+                        });
+                    })
+                    .catch(error => {
+                        console.error('Error fetching slots:', error);
+                        timeSlotSelect.innerHTML = '<option value="">Error loading slots</option>';
+                        visualTimeSlots.innerHTML = '<div class="placeholder-message text-center py-4 text-danger"><i class="bi bi-exclamation-triangle fs-3 d-block mb-2"></i>Error loading time slots. Please try again.</div>';
+                    });
+                
+                // Update selection displays
+                updateSelectionDisplays();
+            }
+
+            // Function to update hospital when doctor is selected (By Doctor section)
+            function updateHospitalByDoctor() {
+                const doctorSelect = document.getElementById('DoctorId');
+                const selected = doctorSelect.options[doctorSelect.selectedIndex];
+                const hospitalId = selected.getAttribute('data-hospital');
+                
+                // Find doctor in the allDoctors array
+                const doctor = allDoctors.find(d => d.DoctorId == doctorSelect.value);
+                
+                if (doctor) {
+                    document.getElementById('HospitalName').value = doctor.HospitalName || 'Not assigned';
+                    document.getElementById('HospitalIdByDoctor').value = hospitalId || '';
+                } else {
+                    document.getElementById('HospitalName').value = 'Not assigned';
+                    document.getElementById('HospitalIdByDoctor').value = '';
+                }
+                
+                // Update selection displays
+                updateSelectionDisplays();
+            }
+
+            // Function to update selection displays
+            function updateSelectionDisplays() {
+                // Get selected values
+                const doctorId = document.getElementById('byHospitalSection').style.display === 'none' 
+                    ? document.getElementById('DoctorId').value 
+                    : document.getElementById('DoctorIdByHospital').value;
+                
+                const hospitalId = document.getElementById('byHospitalSection').style.display === 'none'
+                    ? document.getElementById('HospitalIdByDoctor').value
+                    : document.getElementById('HospitalId').value;
+                
+                const date = document.getElementById('AppointmentDate').value;
+                const timeSlot = document.getElementById('TimeSlot').value;
+                
+                // Get display text
+                let doctorText = 'Not selected yet';
+                let hospitalText = 'Not selected yet';
+                let dateText = date ? new Date(date).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) : 'Not selected yet';
+                let timeText = '';
+                
+                if (timeSlot) {
+                    const timeSlotOption = document.querySelector(`#TimeSlot option[value="${timeSlot}"]`);
+                    timeText = timeSlotOption ? timeSlotOption.textContent : '';
+                }
+                
+                // Find doctor and hospital names
+                if (doctorId) {
+                    const doctor = allDoctors.find(d => d.DoctorId == doctorId);
+                    if (doctor) {
+                        doctorText = doctor.Name + ' - ' + doctor.Specialization;
+                    }
+                }
+                
+                if (hospitalId) {
+                    const hospital = allDoctors.find(d => d.HospitalId == hospitalId);
+                    if (hospital) {
+                        hospitalText = hospital.HospitalName;
+                    }
+                } else if (document.getElementById('byHospitalSection').style.display === 'none') {
+                    hospitalText = document.getElementById('HospitalName').value;
+                }
+                
+                // Update displays
+                document.querySelectorAll('[id^="selectedDoctorDisplay"]').forEach(el => {
+                    el.textContent = doctorText;
+                });
+                
+                document.querySelectorAll('[id^="selectedHospitalDisplay"]').forEach(el => {
+                    el.textContent = hospitalText;
+                });
+                
+                document.getElementById('selectedDateDisplay').textContent = dateText;
+                
+                // Update summary
+                document.getElementById('summaryDoctor').textContent = doctorText;
+                document.getElementById('summaryHospital').textContent = hospitalText;
+                document.getElementById('summaryDate').textContent = dateText;
+                document.getElementById('summaryTime').textContent = timeText || 'Not selected';
+            }
+
+            // Filter doctors by selected hospital
+            const allDoctors = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(doctors.Select(d => new
+                {
+                    d.DoctorId,
+                    d.Name,
+                    d.Specialization,
+                    d.HospitalId,
+                    HospitalName = d.Hospital != null ? d.Hospital.Name : "Not assigned"
+                })));
+
+            document.getElementById('HospitalId').addEventListener('change', function () {
+                const hospitalId = this.value;
+                const doctorSelect = document.getElementById('DoctorIdByHospital');
+                doctorSelect.innerHTML = '<option value="">Select Doctor</option>';
+                
+                const filteredDoctors = allDoctors.filter(d => d.HospitalId == hospitalId);
+                
+                if (filteredDoctors.length === 0) {
+                    const opt = document.createElement('option');
+                    opt.value = "";
+                    opt.text = "No doctors available at this hospital";
+                    doctorSelect.appendChild(opt);
+                    doctorSelect.disabled = true;
+                } else {
+                    doctorSelect.disabled = false;
+                    filteredDoctors.forEach(d => {
+                        const opt = document.createElement('option');
+                        opt.value = d.DoctorId;
+                        opt.text = d.Name + ' - ' + d.Specialization;
+                        doctorSelect.appendChild(opt);
+                    });
+                }
+                
+                // Update selection displays
+                updateSelectionDisplays();
+            });
+
+            // Form submission animation
+            document.getElementById('appointmentForm').addEventListener('submit', function(e) {
+                // Add loading state to submit button
+                const submitBtn = this.querySelector('button[type="submit"]');
+                submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Processing...';
+                submitBtn.disabled = true;
+                
+                // Let the form submit normally
+                return true;
+            });
+        });
+    </script>
+}

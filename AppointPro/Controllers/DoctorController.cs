@@ -21,7 +21,6 @@ namespace AppointPro.Controllers
         {
             var doctors = await _context.Doctors
                 .Include(d => d.Hospital)
-                .Include(d => d.User)
                 .ToListAsync();
             return View(doctors);
         }
@@ -34,7 +33,6 @@ namespace AppointPro.Controllers
 
             var doctor = await _context.Doctors
                 .Include(d => d.Hospital)
-                .Include(d => d.User)
                 .FirstOrDefaultAsync(m => m.DoctorId == id);
 
             if (doctor == null)
@@ -47,7 +45,6 @@ namespace AppointPro.Controllers
         public IActionResult Create()
         {
             ViewBag.Hospitals = _context.Hospitals.ToList();
-            ViewBag.Users = _context.Set<ApplicationUser>().Where(u => u.Role == UserRole.Doctor).ToList();
             return View();
         }
 
@@ -56,7 +53,6 @@ namespace AppointPro.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(Doctor doctor)
         {
-            ModelState.Remove("User");
             ModelState.Remove("Hospital");
 
             if (ModelState.IsValid)
@@ -84,7 +80,6 @@ namespace AppointPro.Controllers
 
                 // Repopulate dropdowns and return view as usual
                 ViewBag.Hospitals = _context.Hospitals.ToList();
-                ViewBag.Users = _context.Set<ApplicationUser>().Where(u => u.Role == UserRole.Doctor).ToList();
                 return View(doctor);
             }
         }
@@ -96,14 +91,12 @@ namespace AppointPro.Controllers
                 return NotFound();
 
             var doctor = await _context.Doctors
-                .Include(d => d.User)
                 .FirstOrDefaultAsync(d => d.DoctorId == id);
 
             if (doctor == null)
                 return NotFound();
 
             ViewBag.Hospitals = _context.Hospitals.ToList();
-            ViewBag.Users = _context.Set<ApplicationUser>().Where(u => u.Role == UserRole.Doctor).ToList();
             return View(doctor);
         }
 
@@ -133,7 +126,6 @@ namespace AppointPro.Controllers
             }
 
             ViewBag.Hospitals = _context.Hospitals.ToList();
-            ViewBag.Users = _context.Set<ApplicationUser>().Where(u => u.Role == UserRole.Doctor).ToList();
             return View(doctor);
         }
 
@@ -145,7 +137,6 @@ namespace AppointPro.Controllers
 
             var doctor = await _context.Doctors
                 .Include(d => d.Hospital)
-                .Include(d => d.User)
                 .FirstOrDefaultAsync(m => m.DoctorId == id);
 
             if (doctor == null)

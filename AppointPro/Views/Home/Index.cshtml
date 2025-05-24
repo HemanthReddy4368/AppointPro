@@ -6,69 +6,105 @@
 <section class="hero-section py-5">
     <div class="container">
         <div class="row align-items-center">
-            <div class="col-lg-6 mb-5 mb-lg-0">
+            <div class="col-lg-6 mb-5 mb-lg-0" data-aos="fade-right">
                 <h1 class="display-4 fw-bold mb-3 text-gradient">Your Health, Our Priority</h1>
                 <p class="lead mb-4">AppointPro+ makes healthcare accessible with easy appointment booking, medical records management, and seamless doctor consultations.</p>
                 <div class="d-flex flex-wrap gap-3 mb-4">
-                    <a asp-controller="Hospital" asp-action="Index" class="btn btn-primary btn-lg">
-                        <i class="bi bi-hospital me-2"></i>Find Hospitals
-                    </a>
-                    <a asp-controller="Account" asp-action="Login" class="btn btn-outline-primary btn-lg">
-                        <i class="bi bi-calendar-plus me-2"></i>Book Appointment
-                    </a>
+                    @if (User.Identity.IsAuthenticated)
+                    {
+                        <a asp-controller="Appointment" asp-action="Create" class="btn btn-primary btn-lg btn-pulse">
+                            <i class="bi bi-calendar-plus me-2"></i>Book Appointment
+                        </a>
+                        <a asp-controller="Appointment" asp-action="Index" class="btn btn-outline-primary btn-lg">
+                            <i class="bi bi-calendar2-week me-2"></i>My Appointments
+                        </a>
+                    }
+                    else
+                    {
+                        <a asp-controller="Account" asp-action="Register" class="btn btn-primary btn-lg btn-pulse">
+                            <i class="bi bi-person-plus me-2"></i>Sign Up
+                        </a>
+                        <a asp-controller="Account" asp-action="Login" class="btn btn-outline-primary btn-lg">
+                            <i class="bi bi-box-arrow-in-right me-2"></i>Login
+                        </a>
+                    }
                 </div>
                 <div class="stats-row d-flex flex-wrap">
-                    <div class="stat-item me-4 mb-3">
-                        <div class="stat-number">500+</div>
+                    <div class="stat-item me-4 mb-3" data-aos="fade-up" data-aos-delay="100">
+                        <div class="stat-number"><span class="counter">500</span>+</div>
                         <div class="stat-label">Doctors</div>
                     </div>
-                    <div class="stat-item me-4 mb-3">
-                        <div class="stat-number">50+</div>
+                    <div class="stat-item me-4 mb-3" data-aos="fade-up" data-aos-delay="200">
+                        <div class="stat-number"><span class="counter">50</span>+</div>
                         <div class="stat-label">Hospitals</div>
                     </div>
-                    <div class="stat-item mb-3">
+                    <div class="stat-item mb-3" data-aos="fade-up" data-aos-delay="300">
                         <div class="stat-number">24/7</div>
                         <div class="stat-label">Support</div>
                     </div>
                 </div>
             </div>
-            <div class="col-lg-6 text-center">
-                <img src="https://img.freepik.com/free-vector/doctors-concept-illustration_114360-1515.jpg" alt="Healthcare Illustration" class="hero-image img-fluid rounded-4 shadow">
+            <div class="col-lg-6 text-center" data-aos="fade-left">
+                <div class="hero-image-container">
+                    <img src="https://img.freepik.com/free-vector/doctors-concept-illustration_114360-1515.jpg" alt="Healthcare Illustration" class="hero-image img-fluid rounded-4">
+                    <div class="floating-card card-1">
+                        <i class="bi bi-heart-pulse"></i>
+                        <span>Health First</span>
+                    </div>
+                    <div class="floating-card card-2">
+                        <i class="bi bi-shield-check"></i>
+                        <span>Trusted Care</span>
+                    </div>
+                    <div class="floating-card card-3">
+                        <i class="bi bi-clock"></i>
+                        <span>Quick Appointments</span>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 </section>
 
 <!-- Features Section -->
-<section class="features-section py-5 bg-light">
+<section class="features-section py-5">
     <div class="container">
-        <h2 class="text-center fw-bold mb-5 text-gradient">Why Choose AppointPro+</h2>
+        <h2 class="text-center fw-bold mb-2 text-gradient" data-aos="fade-up">Why Choose AppointPro+</h2>
+        <p class="text-center text-muted mb-5" data-aos="fade-up">Experience healthcare like never before</p>
         <div class="row g-4">
-            <div class="col-md-4">
+            <div class="col-md-4" data-aos="fade-up" data-aos-delay="100">
                 <div class="feature-card h-100">
                     <div class="feature-icon bg-primary-soft">
                         <i class="bi bi-calendar2-check"></i>
                     </div>
                     <h3 class="feature-title">Easy Appointment Booking</h3>
                     <p class="feature-text">Schedule, reschedule, or cancel appointments with top doctors in just a few clicks.</p>
+                    <div class="feature-hover-content">
+                        <a href="#" class="btn btn-sm btn-primary mt-3">Learn More</a>
+                    </div>
                 </div>
             </div>
-            <div class="col-md-4">
+            <div class="col-md-4" data-aos="fade-up" data-aos-delay="200">
                 <div class="feature-card h-100">
                     <div class="feature-icon bg-success-soft">
                         <i class="bi bi-file-earmark-medical"></i>
                     </div>
                     <h3 class="feature-title">Medical Records Access</h3>
                     <p class="feature-text">Access your prescriptions, lab reports, and doctor notes securely—anytime, anywhere.</p>
+                    <div class="feature-hover-content">
+                        <a href="#" class="btn btn-sm btn-primary mt-3">Learn More</a>
+                    </div>
                 </div>
             </div>
-            <div class="col-md-4">
+            <div class="col-md-4" data-aos="fade-up" data-aos-delay="300">
                 <div class="feature-card h-100">
                     <div class="feature-icon bg-info-soft">
                         <i class="bi bi-capsule"></i>
                     </div>
                     <h3 class="feature-title">Pharmacy Integration</h3>
                     <p class="feature-text">Order prescribed medicines online and track your delivery with ease.</p>
+                    <div class="feature-hover-content">
+                        <a href="#" class="btn btn-sm btn-primary mt-3">Learn More</a>
+                    </div>
                 </div>
             </div>
         </div>
@@ -78,14 +114,17 @@
 <!-- Top Doctors Section -->
 <section class="doctors-section py-5">
     <div class="container">
-        <h2 class="text-center fw-bold mb-5 text-gradient">Meet Our Top Doctors</h2>
+        <h2 class="text-center fw-bold mb-2 text-gradient" data-aos="fade-up">Meet Our Top Doctors</h2>
+        <p class="text-center text-muted mb-5" data-aos="fade-up">Experienced professionals ready to help you</p>
         <div class="row g-4">
-            <div class="col-lg-3 col-md-6">
+            <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="100">
                 <div class="doctor-card">
-                    <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="Dr. Alice Johnson" class="doctor-img">
+                    <div class="doctor-img-wrapper">
+                        <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="Dr. Alice Johnson" class="doctor-img">
+                        <div class="doctor-specialty-badge">Cardiology</div>
+                    </div>
                     <div class="doctor-info">
                         <h4 class="doctor-name">Dr. Alice Johnson</h4>
-                        <p class="doctor-specialty">Cardiology</p>
                         <div class="doctor-rating">
                             <i class="bi bi-star-fill"></i>
                             <i class="bi bi-star-fill"></i>
@@ -95,15 +134,20 @@
                             <span>4.8</span>
                         </div>
                         <p class="doctor-hospital">Mayo Clinic</p>
+                        <div class="doctor-hover-content">
+                            <a href="#" class="btn btn-sm btn-primary w-100">Book Appointment</a>
+                        </div>
                     </div>
                 </div>
             </div>
-            <div class="col-lg-3 col-md-6">
+            <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="200">
                 <div class="doctor-card">
-                    <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Dr. Robert Smith" class="doctor-img">
+                    <div class="doctor-img-wrapper">
+                        <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Dr. Robert Smith" class="doctor-img">
+                        <div class="doctor-specialty-badge">Neurology</div>
+                    </div>
                     <div class="doctor-info">
                         <h4 class="doctor-name">Dr. Robert Smith</h4>
-                        <p class="doctor-specialty">Neurology</p>
                         <div class="doctor-rating">
                             <i class="bi bi-star-fill"></i>
                             <i class="bi bi-star-fill"></i>
@@ -113,15 +157,20 @@
                             <span>4.0</span>
                         </div>
                         <p class="doctor-hospital">Cleveland Clinic</p>
+                        <div class="doctor-hover-content">
+                            <a href="#" class="btn btn-sm btn-primary w-100">Book Appointment</a>
+                        </div>
                     </div>
                 </div>
             </div>
-            <div class="col-lg-3 col-md-6">
+            <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="300">
                 <div class="doctor-card">
-                    <img src="https://randomuser.me/api/portraits/women/68.jpg" alt="Dr. Priya Patel" class="doctor-img">
+                    <div class="doctor-img-wrapper">
+                        <img src="https://randomuser.me/api/portraits/women/68.jpg" alt="Dr. Priya Patel" class="doctor-img">
+                        <div class="doctor-specialty-badge">Pediatrics</div>
+                    </div>
                     <div class="doctor-info">
                         <h4 class="doctor-name">Dr. Priya Patel</h4>
-                        <p class="doctor-specialty">Pediatrics</p>
                         <div class="doctor-rating">
                             <i class="bi bi-star-fill"></i>
                             <i class="bi bi-star-fill"></i>
@@ -131,15 +180,20 @@
                             <span>4.5</span>
                         </div>
                         <p class="doctor-hospital">Johns Hopkins</p>
+                        <div class="doctor-hover-content">
+                            <a href="#" class="btn btn-sm btn-primary w-100">Book Appointment</a>
+                        </div>
                     </div>
                 </div>
             </div>
-            <div class="col-lg-3 col-md-6">
+            <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="400">
                 <div class="doctor-card">
-                    <img src="https://randomuser.me/api/portraits/men/65.jpg" alt="Dr. Michael Lee" class="doctor-img">
+                    <div class="doctor-img-wrapper">
+                        <img src="https://randomuser.me/api/portraits/men/65.jpg" alt="Dr. Michael Lee" class="doctor-img">
+                        <div class="doctor-specialty-badge">Orthopedics</div>
+                    </div>
                     <div class="doctor-info">
                         <h4 class="doctor-name">Dr. Michael Lee</h4>
-                        <p class="doctor-specialty">Orthopedics</p>
                         <div class="doctor-rating">
                             <i class="bi bi-star-fill"></i>
                             <i class="bi bi-star-fill"></i>
@@ -149,22 +203,28 @@
                             <span>4.2</span>
                         </div>
                         <p class="doctor-hospital">Mass General</p>
+                        <div class="doctor-hover-content">
+                            <a href="#" class="btn btn-sm btn-primary w-100">Book Appointment</a>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="text-center mt-4">
-            <a href="#" class="btn btn-primary btn-lg">View All Doctors</a>
+        <div class="text-center mt-5" data-aos="fade-up">
+            <a href="#" class="btn btn-primary btn-lg px-5">
+                <i class="bi bi-people me-2"></i>View All Doctors
+            </a>
         </div>
     </div>
 </section>
 
 <!-- How It Works Section -->
-<section class="how-it-works-section py-5 bg-light">
+<section class="how-it-works-section py-5">
     <div class="container">
-        <h2 class="text-center fw-bold mb-5 text-gradient">How It Works</h2>
+        <h2 class="text-center fw-bold mb-2 text-gradient" data-aos="fade-up">How It Works</h2>
+        <p class="text-center text-muted mb-5" data-aos="fade-up">Simple steps to better healthcare</p>
         <div class="row g-4">
-            <div class="col-md-3">
+            <div class="col-md-3" data-aos="fade-up" data-aos-delay="100">
                 <div class="step-card text-center">
                     <div class="step-number">1</div>
                     <div class="step-icon">
@@ -174,7 +234,7 @@
                     <p class="step-text">Sign up and complete your profile with basic health information</p>
                 </div>
             </div>
-            <div class="col-md-3">
+            <div class="col-md-3" data-aos="fade-up" data-aos-delay="200">
                 <div class="step-card text-center">
                     <div class="step-number">2</div>
                     <div class="step-icon">
@@ -184,7 +244,7 @@
                     <p class="step-text">Search for specialists by location, specialty, or ratings</p>
                 </div>
             </div>
-            <div class="col-md-3">
+            <div class="col-md-3" data-aos="fade-up" data-aos-delay="300">
                 <div class="step-card text-center">
                     <div class="step-number">3</div>
                     <div class="step-icon">
@@ -194,7 +254,7 @@
                     <p class="step-text">Select a convenient time slot and confirm your booking</p>
                 </div>
             </div>
-            <div class="col-md-3">
+            <div class="col-md-3" data-aos="fade-up" data-aos-delay="400">
                 <div class="step-card text-center">
                     <div class="step-number">4</div>
                     <div class="step-icon">
@@ -211,12 +271,21 @@
 <!-- CTA Section -->
 <section class="cta-section py-5">
     <div class="container">
-        <div class="cta-card text-center p-5">
+        <div class="cta-card text-center p-5" data-aos="zoom-in">
             <h2 class="fw-bold mb-3">Ready to take control of your healthcare?</h2>
             <p class="lead mb-4">Join thousands of patients who have simplified their healthcare journey with AppointPro+</p>
-            <a asp-controller="Account" asp-action="Register" class="btn btn-primary btn-lg px-5">
-                <i class="bi bi-person-plus me-2"></i>Sign Up Now
-            </a>
+            @if (User.Identity.IsAuthenticated)
+            {
+                <a asp-controller="Appointment" asp-action="Create" class="btn btn-primary btn-lg px-5 btn-pulse">
+                    <i class="bi bi-calendar-plus me-2"></i>Book Your Appointment
+                </a>
+            }
+            else
+            {
+                <a asp-controller="Account" asp-action="Register" class="btn btn-primary btn-lg px-5 btn-pulse">
+                    <i class="bi bi-person-plus me-2"></i>Sign Up Now
+                </a>
+            }
         </div>
     </div>
 </section>
@@ -225,10 +294,11 @@
     /* Base Styles */
     section {
         overflow: hidden;
+        position: relative;
     }
     
     .text-gradient {
-        background: linear-gradient(90deg, #4f46e5, #0ea5e9);
+        background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         background-clip: text;
@@ -236,14 +306,91 @@
     
     /* Hero Section */
     .hero-section {
-        padding: 60px 0;
+        padding: 80px 0;
         background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 50%, #dbeafe 100%);
+        position: relative;
+    }
+    
+    .hero-section::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 50%;
+        height: 100%;
+        background: url('https://cdn.pixabay.com/photo/2017/08/30/01/05/milky-way-2695569_1280.jpg') no-repeat;
+        background-size: cover;
+        opacity: 0.05;
+        z-index: 0;
+    }
+    
+    .hero-image-container {
+        position: relative;
+        perspective: 1000px;
     }
     
     .hero-image {
         max-height: 500px;
         border-radius: 20px;
         box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        transform: rotateY(-5deg);
+        transition: transform 0.5s ease;
+    }
+    
+    .hero-image-container:hover .hero-image {
+        transform: rotateY(0deg);
+    }
+    
+    .floating-card {
+        position: absolute;
+        background: white;
+        border-radius: 12px;
+        padding: 10px 15px;
+        display: flex;
+        align-items: center;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        animation: float 3s ease-in-out infinite;
+    }
+    
+    .floating-card i {
+        font-size: 1.5rem;
+        margin-right: 10px;
+        color: var(--primary-color);
+    }
+    
+    .floating-card span {
+        font-weight: 500;
+        white-space: nowrap;
+    }
+    
+    .card-1 {
+        top: 10%;
+        left: -5%;
+        animation-delay: 0s;
+    }
+    
+    .card-2 {
+        top: 40%;
+        right: -5%;
+        animation-delay: 0.5s;
+    }
+    
+    .card-3 {
+        bottom: 10%;
+        left: 10%;
+        animation-delay: 1s;
+    }
+    
+    @@keyframes float {
+        0% {
+            transform: translateY(0px);
+        }
+        50% {
+            transform: translateY(-10px);
+        }
+        100% {
+            transform: translateY(0px);
+        }
     }
     
     .stats-row {
@@ -257,46 +404,92 @@
     .stat-number {
         font-size: 2rem;
         font-weight: 700;
-        color: #4f46e5;
+        background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
     }
     
     .stat-label {
         font-size: 0.9rem;
-        color: #64748b;
+        color: var(--text-muted);
+        font-weight: 500;
+    }
+    
+    /* Counter animation */
+    .counter {
+        display: inline-block;
     }
     
     /* Features Section */
     .features-section {
-        background-color: #f8fafc;
+        padding: 80px 0;
+        background-color: white;
+        position: relative;
+    }
+    
+    .features-section::before {
+        content: '';
+        position: absolute;
+        top: -50px;
+        left: 0;
+        width: 100%;
+        height: 100px;
+        background: linear-gradient(to bottom right, transparent 49%, white 50%);
     }
     
     .feature-card {
         background: white;
-        border-radius: 16px;
+        border-radius: 20px;
         padding: 30px;
-        box-shadow: 0 10px 25px rgba(0,0,0,0.05);
-        transition: all 0.3s ease;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+        transition: all 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
+        position: relative;
+        overflow: hidden;
+        z-index: 1;
+    }
+    
+    .feature-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(135deg, rgba(99, 102, 241, 0.05), rgba(14, 165, 233, 0.05));
+        z-index: -1;
+        opacity: 0;
+        transition: opacity 0.5s ease;
     }
     
     .feature-card:hover {
-        transform: translateY(-10px);
-        box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+        transform: translateY(-15px) scale(1.03);
+        box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+    }
+    
+    .feature-card:hover::before {
+        opacity: 1;
     }
     
     .feature-icon {
         width: 70px;
         height: 70px;
-        border-radius: 50%;
+        border-radius: 16px;
         display: flex;
         align-items: center;
         justify-content: center;
         margin-bottom: 20px;
         font-size: 2rem;
+        transition: all 0.3s ease;
+    }
+    
+    .feature-card:hover .feature-icon {
+        transform: scale(1.1) rotate(10deg);
     }
     
     .bg-primary-soft {
-        background-color: rgba(79, 70, 229, 0.1);
-        color: #4f46e5;
+        background-color: rgba(99, 102, 241, 0.1);
+        color: var(--primary-color);
     }
     
     .bg-success-soft {
@@ -306,7 +499,7 @@
     
     .bg-info-soft {
         background-color: rgba(14, 165, 233, 0.1);
-        color: #0ea5e9;
+        color: var(--secondary-color);
     }
     
     .feature-title {
@@ -316,36 +509,83 @@
     }
     
     .feature-text {
-        color: #64748b;
+        color: var(--text-muted);
         margin-bottom: 0;
+    }
+    
+    .feature-hover-content {
+        opacity: 0;
+        transform: translateY(20px);
+        transition: all 0.3s ease;
+    }
+    
+    .feature-card:hover .feature-hover-content {
+        opacity: 1;
+        transform: translateY(0);
     }
     
     /* Doctors Section */
     .doctors-section {
-        padding: 60px 0;
+        padding: 80px 0;
+        background-color: var(--background-color);
+        position: relative;
+    }
+    
+    .doctors-section::before {
+        content: '';
+        position: absolute;
+        top: -50px;
+        left: 0;
+        width: 100%;
+        height: 100px;
+        background: linear-gradient(to bottom left, white 49%, transparent 50%);
     }
     
     .doctor-card {
         background: white;
-        border-radius: 16px;
+        border-radius: 20px;
         overflow: hidden;
-        box-shadow: 0 10px 25px rgba(0,0,0,0.05);
-        transition: all 0.3s ease;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+        transition: all 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
+        height: 100%;
     }
     
     .doctor-card:hover {
-        transform: translateY(-10px);
-        box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+        transform: translateY(-15px);
+        box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+    }
+    
+    .doctor-img-wrapper {
+        position: relative;
+        overflow: hidden;
     }
     
     .doctor-img {
         width: 100%;
         height: 200px;
         object-fit: cover;
+        transition: all 0.5s ease;
+    }
+    
+    .doctor-card:hover .doctor-img {
+        transform: scale(1.1);
+    }
+    
+    .doctor-specialty-badge {
+        position: absolute;
+        bottom: 10px;
+        right: 10px;
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        color: white;
+        padding: 5px 10px;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 500;
     }
     
     .doctor-info {
         padding: 20px;
+        position: relative;
     }
     
     .doctor-name {
@@ -354,95 +594,171 @@
         margin-bottom: 5px;
     }
     
-    .doctor-specialty {
-        color: #4f46e5;
-        font-weight: 500;
-        margin-bottom: 10px;
-    }
-    
     .doctor-rating {
         color: #f59e0b;
         margin-bottom: 10px;
+        display: flex;
+        align-items: center;
+    }
+    
+    .doctor-rating i {
+        margin-right: 2px;
     }
     
     .doctor-rating span {
-        color: #64748b;
+        color: var(--text-muted);
         margin-left: 5px;
+        font-weight: 500;
     }
     
     .doctor-hospital {
-        color: #64748b;
+        color: var(--text-muted);
         font-size: 0.9rem;
         margin-bottom: 0;
     }
     
+    .doctor-hover-content {
+        opacity: 0;
+        transform: translateY(20px);
+        transition: all 0.3s ease;
+        margin-top: 15px;
+    }
+    
+    .doctor-card:hover .doctor-hover-content {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    
     /* How It Works Section */
     .how-it-works-section {
-        background-color: #f8fafc;
+        padding: 80px 0;
+        background-color: white;
+        position: relative;
+    }
+    
+    .how-it-works-section::before {
+        content: '';
+        position: absolute;
+        top: -50px;
+        left: 0;
+        width: 100%;
+        height: 100px;
+        background: linear-gradient(to bottom right, var(--background-color) 49%, white 50%);
     }
     
     .step-card {
         background: white;
-        border-radius: 16px;
-        padding: 30px 20px;
-        box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+        border-radius: 20px;
+        padding: 40px 20px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.05);
         position: relative;
-        transition: all 0.3s ease;
+        transition: all 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
+        height: 100%;
     }
     
     .step-card:hover {
-        transform: translateY(-10px);
-        box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+        transform: translateY(-15px);
+        box-shadow: 0 20px 40px rgba(0,0,0,0.1);
     }
     
     .step-number {
         position: absolute;
-        top: -15px;
+        top: -20px;
         left: 50%;
         transform: translateX(-50%);
-        width: 30px;
-        height: 30px;
-        background: linear-gradient(135deg, #4f46e5, #0ea5e9);
+        width: 40px;
+        height: 40px;
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
         color: white;
         border-radius: 50%;
         display: flex;
         align-items: center;
         justify-content: center;
         font-weight: 600;
+        font-size: 1.2rem;
+        box-shadow: 0 5px 15px rgba(99, 102, 241, 0.3);
     }
     
     .step-icon {
-        font-size: 2.5rem;
-        color: #4f46e5;
-        margin-bottom: 15px;
+        font-size: 3rem;
+        color: var(--primary-color);
+        margin-bottom: 20px;
+        transition: all 0.3s ease;
+    }
+    
+    .step-card:hover .step-icon {
+        transform: scale(1.2) rotate(10deg);
     }
     
     .step-title {
-        font-size: 1.1rem;
+        font-size: 1.2rem;
         font-weight: 600;
-        margin-bottom: 10px;
+        margin-bottom: 15px;
     }
     
     .step-text {
-        color: #64748b;
+        color: var(--text-muted);
         margin-bottom: 0;
     }
     
     /* CTA Section */
     .cta-section {
-        padding: 60px 0;
+        padding: 80px 0;
+        background-color: var(--background-color);
+        position: relative;
+    }
+    
+    .cta-section::before {
+        content: '';
+        position: absolute;
+        top: -50px;
+        left: 0;
+        width: 100%;
+        height: 100px;
+        background: linear-gradient(to bottom left, white 49%, var(--background-color) 50%);
     }
     
     .cta-card {
-        background: linear-gradient(135deg, #4f46e5 0%, #0ea5e9 100%);
-        border-radius: 16px;
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+        border-radius: 24px;
         color: white;
-        box-shadow: 0 15px 35px rgba(79, 70, 229, 0.2);
+        box-shadow: 0 20px 40px rgba(99, 102, 241, 0.3);
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .cta-card::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 70%);
+        animation: pulse-bg 15s linear infinite;
+    }
+    
+    @@keyframes pulse-bg {
+        0% {
+            transform: translate(0, 0);
+        }
+        25% {
+            transform: translate(10%, 10%);
+        }
+        50% {
+            transform: translate(0, 20%);
+        }
+        75% {
+            transform: translate(-10%, 10%);
+        }
+        100% {
+            transform: translate(0, 0);
+        }
     }
     
     .cta-card .btn-primary {
         background: white;
-        color: #4f46e5;
+        color: var(--primary-color);
         border: none;
         font-weight: 600;
         transition: all 0.3s ease;
@@ -454,14 +770,31 @@
         box-shadow: 0 10px 25px rgba(0,0,0,0.1);
     }
     
+    /* Counter animation */
+    @@keyframes countUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
     /* Responsive Adjustments */
     @@media (max-width: 992px) {
         .hero-section {
             text-align: center;
+            padding: 60px 0;
         }
         
         .stats-row {
             justify-content: center;
+        }
+        
+        .floating-card {
+            display: none;
         }
     }
     
@@ -470,8 +803,54 @@
             padding: 40px 0;
         }
         
+        .features-section,
+        .doctors-section,
+        .how-it-works-section,
+        .cta-section {
+            padding: 60px 0;
+        }
+        
         .step-card {
             margin-bottom: 30px;
         }
     }
 </style>
+
+<script>
+    // Counter animation
+    document.addEventListener('DOMContentLoaded', function() {
+        const counters = document.querySelectorAll('.counter');
+        
+        counters.forEach(counter => {
+            const target = parseInt(counter.textContent);
+            const duration = 2000; // 2 seconds
+            const step = Math.ceil(target / (duration / 20)); // Update every 20ms
+            
+            let current = 0;
+            const updateCounter = () => {
+                current += step;
+                if (current > target) {
+                    current = target;
+                    clearInterval(interval);
+                }
+                counter.textContent = current;
+            };
+            
+            const interval = setInterval(updateCounter, 20);
+        });
+        
+        // Add parallax effect to hero section
+        window.addEventListener('scroll', function() {
+            const scrollPosition = window.pageYOffset;
+            const heroSection = document.querySelector('.hero-section');
+            
+            if (heroSection) {
+                const heroElements = heroSection.querySelectorAll('.floating-card');
+                heroElements.forEach((element, index) => {
+                    const speed = 0.1 + (index * 0.05);
+                    element.style.transform = `translateY(${scrollPosition * speed}px)`;
+                });
+            }
+        });
+    });
+</script>
