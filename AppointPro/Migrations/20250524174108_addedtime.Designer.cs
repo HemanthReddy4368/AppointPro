@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AppointPro.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250523101911_addingnew")]
-    partial class addingnew
+    [Migration("20250524174108_addedtime")]
+    partial class addedtime
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -73,6 +73,43 @@ namespace AppointPro.Migrations
                     b.ToTable("Users");
                 });
 
+            modelBuilder.Entity("AppointPro.Models.Appointment", b =>
+                {
+                    b.Property<int>("AppointmentId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("AppointmentId"));
+
+                    b.Property<DateTime>("AppointmentDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("DoctorId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Notes")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<int>("PatientId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.HasKey("AppointmentId");
+
+                    b.HasIndex("DoctorId");
+
+                    b.HasIndex("PatientId");
+
+                    b.ToTable("Appointments");
+                });
+
             modelBuilder.Entity("AppointPro.Models.Doctor", b =>
                 {
                     b.Property<int>("DoctorId")
@@ -88,6 +125,14 @@ namespace AppointPro.Migrations
                     b.Property<decimal?>("ConsultationFee")
                         .HasColumnType("decimal(18, 2)");
 
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<TimeSpan>("EndTime")
+                        .HasColumnType("time");
+
                     b.Property<int>("HospitalId")
                         .HasColumnType("int");
 
@@ -100,6 +145,11 @@ namespace AppointPro.Migrations
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("PhoneNumber")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
 
                     b.Property<string>("ProfilePicture")
                         .IsRequired()
@@ -114,19 +164,26 @@ namespace AppointPro.Migrations
                     b.Property<double?>("Rating")
                         .HasColumnType("float");
 
+                    b.Property<int>("SlotDurationMinutes")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SlotsPerDay")
+                        .HasColumnType("int");
+
                     b.Property<string>("Specialization")
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
+                    b.Property<TimeSpan>("StartTime")
+                        .HasColumnType("time");
 
                     b.HasKey("DoctorId");
 
-                    b.HasIndex("HospitalId");
+                    b.HasIndex("Email")
+                        .IsUnique();
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("HospitalId");
 
                     b.ToTable("Doctors");
                 });
@@ -180,6 +237,25 @@ namespace AppointPro.Migrations
                     b.ToTable("Hospitals");
                 });
 
+            modelBuilder.Entity("AppointPro.Models.Appointment", b =>
+                {
+                    b.HasOne("AppointPro.Models.Doctor", "Doctor")
+                        .WithMany()
+                        .HasForeignKey("DoctorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("AppointPro.Models.ApplicationUser", "Patient")
+                        .WithMany()
+                        .HasForeignKey("PatientId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Doctor");
+
+                    b.Navigation("Patient");
+                });
+
             modelBuilder.Entity("AppointPro.Models.Doctor", b =>
                 {
                     b.HasOne("AppointPro.Models.Hospital", "Hospital")
@@ -188,15 +264,7 @@ namespace AppointPro.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("AppointPro.Models.ApplicationUser", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
                     b.Navigation("Hospital");
-
-                    b.Navigation("User");
                 });
 #pragma warning restore 612, 618
         }

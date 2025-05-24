@@ -1,0 +1,941 @@
+﻿@model IEnumerable<AppointPro.Models.Appointment>
+@{
+    ViewData["Title"] = "My Appointments";
+}
+
+<div class="appointments-dashboard py-5">
+    <div class="container">
+        <!-- Header Section -->
+        <div class="dashboard-header glass-card mb-4" data-aos="fade-down">
+            <div class="d-flex justify-content-between align-items-center flex-wrap">
+                <div class="dashboard-title">
+                    <h1 class="display-6 fw-bold text-gradient mb-1">My Appointments</h1>
+                    <p class="text-muted">Manage your scheduled appointments</p>
+                </div>
+                <div class="d-flex gap-3 flex-wrap">
+                    <div class="search-box">
+                        <i class="bi bi-search search-icon"></i>
+                        <input type="text" id="searchInput" class="form-control" placeholder="Search appointments...">
+                    </div>
+                    <a asp-action="Create" class="btn btn-primary d-flex align-items-center gap-2">
+                        <i class="bi bi-plus-circle"></i> Book Appointment
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="stats-container mb-4">
+            <div class="row g-4">
+                <div class="col-lg-3 col-md-6" data-aos="zoom-in" data-aos-delay="100">
+                    <div class="stat-card">
+                        <div class="stat-icon bg-primary-soft">
+                            <i class="bi bi-calendar-check"></i>
+                        </div>
+                        <div class="stat-info">
+                            <div class="stat-value counter">@Model.Count()</div>
+                            <div class="stat-label">Total Appointments</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6" data-aos="zoom-in" data-aos-delay="200">
+                    <div class="stat-card">
+                        <div class="stat-icon bg-success-soft">
+                            <i class="bi bi-check-circle"></i>
+                        </div>
+                        <div class="stat-info">
+                            <div class="stat-value counter">@Model.Count(x => x.Status == AppointPro.Models.AppointmentStatus.Scheduled)</div>
+                            <div class="stat-label">Upcoming</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6" data-aos="zoom-in" data-aos-delay="300">
+                    <div class="stat-card">
+                        <div class="stat-icon bg-info-soft">
+                            <i class="bi bi-clipboard-check"></i>
+                        </div>
+                        <div class="stat-info">
+                            <div class="stat-value counter">@Model.Count(x => x.Status == AppointPro.Models.AppointmentStatus.Completed)</div>
+                            <div class="stat-label">Completed</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6" data-aos="zoom-in" data-aos-delay="400">
+                    <div class="stat-card">
+                        <div class="stat-icon bg-danger-soft">
+                            <i class="bi bi-x-circle"></i>
+                        </div>
+                        <div class="stat-info">
+                            <div class="stat-value counter">@Model.Count(x => x.Status == AppointPro.Models.AppointmentStatus.Cancelled)</div>
+                            <div class="stat-label">Cancelled</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filter Tabs -->
+        <div class="filter-tabs mb-4" data-aos="fade-up" data-aos-delay="100">
+            <ul class="nav nav-pills" id="appointmentTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="all-tab" data-bs-toggle="pill" data-bs-target="#all" type="button" role="tab" aria-selected="true">
+                        All Appointments
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="upcoming-tab" data-bs-toggle="pill" data-bs-target="#upcoming" type="button" role="tab" aria-selected="false">
+                        Upcoming
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="completed-tab" data-bs-toggle="pill" data-bs-target="#completed" type="button" role="tab" aria-selected="false">
+                        Completed
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="cancelled-tab" data-bs-toggle="pill" data-bs-target="#cancelled" type="button" role="tab" aria-selected="false">
+                        Cancelled
+                    </button>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Appointments Table -->
+        <div class="tab-content" id="appointmentTabsContent">
+            <div class="tab-pane fade show active" id="all" role="tabpanel" aria-labelledby="all-tab">
+                <div class="table-container glass-card" data-aos="fade-up" data-aos-delay="200">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle">
+                            <thead>
+                                <tr>
+                                    <th scope="col" class="rounded-start">Doctor</th>
+                                    <th scope="col">Hospital</th>
+                                    <th scope="col">Date & Time</th>
+                                    <th scope="col">Status</th>
+                                    <th scope="col">Notes</th>
+                                    <th scope="col" class="rounded-end text-end">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model)
+                                {
+                                    <tr class="table-row-animate">
+                                        <td>
+                                            <div class="d-flex align-items-center gap-3">
+                                                <div class="user-avatar-sm">
+                                                    @if (!string.IsNullOrEmpty(item.Doctor?.ProfilePicture))
+                                                    {
+                                                        <img src="@item.Doctor.ProfilePicture" alt="@item.Doctor.Name" />
+                                                    }
+                                                    else
+                                                    {
+                                                        <div class="avatar-placeholder">@(item.Doctor?.Name.Substring(0, 1).ToUpper() ?? "D")</div>
+                                                    }
+                                                </div>
+                                                <div>
+                                                    <div class="fw-medium">@item.Doctor?.Name</div>
+                                                    <div class="text-muted small">@item.Doctor?.Specialization</div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="hospital-cell">
+                                                @if (item.Doctor?.Hospital != null)
+                                                {
+                                                    <span class="hospital-name">@item.Doctor.Hospital.Name</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="text-muted">Not assigned</span>
+                                                }
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="date-time-cell">
+                                                <div class="date">@item.AppointmentDate.ToString("MMM dd, yyyy")</div>
+                                                <div class="time text-muted">@item.AppointmentDate.ToString("h:mm tt")</div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            @{
+                                                var statusClass = item.Status switch
+                                                {
+                                                    AppointmentStatus.Scheduled => "scheduled",
+                                                    AppointmentStatus.Completed => "completed",
+                                                    AppointmentStatus.Cancelled => "cancelled",
+                                                    AppointmentStatus.NoShow => "no-show",
+                                                    _ => "unknown"
+                                                };
+                                                var statusIcon = item.Status switch
+                                                {
+                                                    AppointmentStatus.Scheduled => "bi-calendar-check",
+                                                    AppointmentStatus.Completed => "bi-check-circle",
+                                                    AppointmentStatus.Cancelled => "bi-x-circle",
+                                                    AppointmentStatus.NoShow => "bi-exclamation-circle",
+                                                    _ => "bi-question-circle"
+                                                };
+                                            }
+                                            <span class="status-badge @statusClass">
+                                                <i class="bi @statusIcon me-1"></i>@item.Status
+                                            </span>
+                                        </td>
+                                        <td>
+                                            @if (!string.IsNullOrEmpty(item.Notes))
+                                            {
+                                                <div class="notes-cell" title="@item.Notes">
+                                                    @item.Notes
+                                                </div>
+                                            }
+                                            else
+                                            {
+                                                <span class="text-muted small">No notes</span>
+                                            }
+                                        </td>
+                                        <td>
+                                            <div class="action-buttons-cell">
+                                                <a asp-action="Details" asp-route-id="@item.AppointmentId" class="btn btn-sm btn-outline-info action-btn">
+                                                    <i class="bi bi-eye"></i>
+                                                    <span class="action-tooltip">View</span>
+                                                </a>
+                                                <a asp-action="Edit" asp-route-id="@item.AppointmentId" class="btn btn-sm btn-outline-primary action-btn">
+                                                    <i class="bi bi-pencil"></i>
+                                                    <span class="action-tooltip">Edit</span>
+                                                </a>
+                                                <a asp-action="Delete" asp-route-id="@item.AppointmentId" class="btn btn-sm btn-outline-danger action-btn">
+                                                    <i class="bi bi-trash"></i>
+                                                    <span class="action-tooltip">Cancel</span>
+                                                </a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Pagination -->
+                    <div class="pagination-container">
+                        <div class="text-muted">
+                            Showing <span class="fw-medium">1</span> to <span class="fw-medium">@Model.Count()</span> of <span class="fw-medium">@Model.Count()</span> entries
+                        </div>
+                        <nav aria-label="Page navigation">
+                            <ul class="pagination mb-0">
+                                <li class="page-item disabled">
+                                    <a class="page-link" href="#" tabindex="-1">
+                                        <i class="bi bi-chevron-left"></i>
+                                    </a>
+                                </li>
+                                <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                                <li class="page-item"><a class="page-link" href="#">2</a></li>
+                                <li class="page-item"><a class="page-link" href="#">3</a></li>
+                                <li class="page-item">
+                                    <a class="page-link" href="#">
+                                        <i class="bi bi-chevron-right"></i>
+                                    </a>
+                                </li>
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Other tab panes would be similar but with filtered data -->
+            <div class="tab-pane fade" id="upcoming" role="tabpanel" aria-labelledby="upcoming-tab">
+                <!-- Similar table structure with filtered data -->
+            </div>
+            
+            <div class="tab-pane fade" id="completed" role="tabpanel" aria-labelledby="completed-tab">
+                <!-- Similar table structure with filtered data -->
+            </div>
+            
+            <div class="tab-pane fade" id="cancelled" role="tabpanel" aria-labelledby="cancelled-tab">
+                <!-- Similar table structure with filtered data -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Appointments Dashboard Styles */
+    .appointments-dashboard {
+        min-height: 80vh;
+    }
+
+    .text-gradient {
+        background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    /* Header Styles */
+    .dashboard-header {
+        padding: 1.5rem;
+        border-radius: 1rem;
+        margin-bottom: 1.5rem;
+        background: rgba(255, 255, 255, 0.9);
+        backdrop-filter: blur(10px);
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.05);
+    }
+
+    .dashboard-title h1 {
+        font-weight: 700;
+        letter-spacing: -0.5px;
+    }
+
+    /* Search Box */
+    .search-box {
+        position: relative;
+        min-width: 250px;
+    }
+
+    .search-icon {
+        position: absolute;
+        left: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--text-muted);
+        transition: all 0.3s ease;
+    }
+
+    .search-box input {
+        padding-left: 2.5rem;
+        border-radius: 0.75rem;
+        border: 1px solid rgba(0, 0, 0, 0.1);
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        transition: all 0.3s ease;
+    }
+
+    .search-box input:focus {
+        box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+        border-color: var(--primary-color);
+    }
+
+    .search-box input:focus + .search-icon {
+        color: var(--primary-color);
+    }
+
+    /* Button Styles */
+    .btn {
+        border-radius: 0.75rem;
+        padding: 0.625rem 1.25rem;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .btn::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 50%;
+        transform: translate(-50%, -50%);
+        transition: width 0.6s ease, height 0.6s ease;
+    }
+
+    .btn:active::after {
+        width: 300px;
+        height: 300px;
+        opacity: 0;
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        border: none;
+        box-shadow: 0 4px 15px rgba(99, 102, 241, 0.2);
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(99, 102, 241, 0.3);
+    }
+
+    /* Stats Cards */
+    .stats-container {
+        margin-bottom: 2rem;
+    }
+
+    .stat-card {
+        background: white;
+        border-radius: 1rem;
+        padding: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+        position: relative;
+        overflow: hidden;
+        height: 100%;
+        transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    }
+
+    .stat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+    }
+
+    .stat-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(135deg, rgba(99, 102, 241, 0.05), rgba(14, 165, 233, 0.05));
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+
+    .stat-card:hover::before {
+        opacity: 1;
+    }
+
+    .stat-icon {
+        width: 60px;
+        height: 60px;
+        border-radius: 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.75rem;
+        flex-shrink: 0;
+        transition: all 0.3s ease;
+    }
+
+    .stat-card:hover .stat-icon {
+        transform: scale(1.1) rotate(10deg);
+    }
+
+    .bg-primary-soft {
+        background-color: rgba(99, 102, 241, 0.1);
+        color: var(--primary-color);
+    }
+
+    .bg-success-soft {
+        background-color: rgba(16, 185, 129, 0.1);
+        color: #10b981;
+    }
+
+    .bg-info-soft {
+        background-color: rgba(14, 165, 233, 0.1);
+        color: var(--secondary-color);
+    }
+
+    .bg-danger-soft {
+        background-color: rgba(239, 68, 68, 0.1);
+        color: #ef4444;
+    }
+
+    .stat-info {
+        flex-grow: 1;
+    }
+
+    .stat-value {
+        font-size: 2rem;
+        font-weight: 700;
+        line-height: 1.2;
+        background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .stat-label {
+        color: var(--text-muted);
+        font-weight: 500;
+    }
+
+    /* Filter Tabs */
+    .filter-tabs {
+        margin-bottom: 1.5rem;
+    }
+
+    .nav-pills {
+        background: white;
+        border-radius: 0.75rem;
+        padding: 0.5rem;
+        display: inline-flex;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    }
+
+    .nav-pills .nav-link {
+        border-radius: 0.5rem;
+        padding: 0.625rem 1.25rem;
+        color: var(--text-color);
+        font-weight: 500;
+        transition: all 0.3s ease;
+        margin: 0 0.25rem;
+    }
+
+    .nav-pills .nav-link:hover:not(.active) {
+        background-color: rgba(99, 102, 241, 0.05);
+        color: var(--primary-color);
+    }
+
+    .nav-pills .nav-link.active {
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        color: white;
+        box-shadow: 0 4px 10px rgba(99, 102, 241, 0.2);
+    }
+
+    /* Table Styles */
+    .table-container {
+        background: rgba(255, 255, 255, 0.9);
+        backdrop-filter: blur(10px);
+        border-radius: 1rem;
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+        padding: 0.5rem;
+    }
+
+    .table {
+        margin-bottom: 0;
+        border-collapse: separate;
+        border-spacing: 0;
+    }
+
+    .table th {
+        background: rgba(248, 250, 252, 0.8);
+        padding: 1rem 1.25rem;
+        font-weight: 600;
+        color: var(--text-color);
+        border: none;
+        white-space: nowrap;
+    }
+
+    .table th:first-child {
+        border-top-left-radius: 0.75rem;
+        border-bottom-left-radius: 0.75rem;
+    }
+
+    .table th:last-child {
+        border-top-right-radius: 0.75rem;
+        border-bottom-right-radius: 0.75rem;
+    }
+
+    .table td {
+        padding: 1rem 1.25rem;
+        border-top: 1px solid rgba(0, 0, 0, 0.05);
+        vertical-align: middle;
+    }
+
+    .table-row-animate {
+        transition: all 0.3s ease;
+    }
+
+    .table-row-animate:hover {
+        background-color: rgba(99, 102, 241, 0.05);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    }
+
+    /* User Avatar */
+    .user-avatar-sm {
+        width: 45px;
+        height: 45px;
+        border-radius: 12px;
+        overflow: hidden;
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 600;
+        color: white;
+        box-shadow: 0 4px 10px rgba(99, 102, 241, 0.2);
+        transition: all 0.3s ease;
+    }
+
+    .table-row-animate:hover .user-avatar-sm {
+        transform: scale(1.05) rotate(5deg);
+    }
+
+    .avatar-placeholder {
+        font-size: 1.25rem;
+    }
+
+    /* Hospital Cell */
+    .hospital-cell {
+        max-width: 180px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .hospital-name {
+        font-weight: 500;
+    }
+
+    /* Date Time Cell */
+    .date-time-cell {
+        white-space: nowrap;
+    }
+
+    .date {
+        font-weight: 500;
+    }
+
+    .time {
+        font-size: 0.875rem;
+    }
+
+    /* Status Badge */
+    .status-badge {
+        padding: 0.35rem 0.75rem;
+        border-radius: 2rem;
+        font-size: 0.875rem;
+        font-weight: 500;
+        display: inline-flex;
+        align-items: center;
+        transition: all 0.3s ease;
+    }
+
+    .status-badge.scheduled {
+        background: rgba(99, 102, 241, 0.1);
+        color: var(--primary-color);
+    }
+
+    .status-badge.completed {
+        background: rgba(16, 185, 129, 0.1);
+        color: #10b981;
+    }
+
+    .status-badge.cancelled {
+        background: rgba(239, 68, 68, 0.1);
+        color: #ef4444;
+    }
+
+    .status-badge.no-show {
+        background: rgba(245, 158, 11, 0.1);
+        color: #f59e0b;
+    }
+
+    .status-badge i {
+        font-size: 0.75rem;
+        margin-right: 0.25rem;
+    }
+
+    .table-row-animate:hover .status-badge {
+        transform: scale(1.05);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Notes Cell */
+    .notes-cell {
+        max-width: 200px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        font-size: 0.875rem;
+    }
+
+    /* Action Buttons Cell */
+    .action-buttons-cell {
+        display: flex;
+        gap: 0.5rem;
+        justify-content: flex-end;
+    }
+
+    .action-btn {
+        width: 36px;
+        height: 36px;
+        padding: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 0.5rem;
+        position: relative;
+        transition: all 0.3s ease;
+    }
+
+    .action-btn:hover {
+        transform: translateY(-3px);
+    }
+
+    .action-tooltip {
+        position: absolute;
+        top: -30px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: rgba(0, 0, 0, 0.8);
+        color: white;
+        padding: 0.25rem 0.5rem;
+        border-radius: 0.25rem;
+        font-size: 0.75rem;
+        white-space: nowrap;
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.3s ease;
+    }
+
+    .action-tooltip::after {
+        content: '';
+        position: absolute;
+        top: 100%;
+        left: 50%;
+        transform: translateX(-50%);
+        border-width: 5px;
+        border-style: solid;
+        border-color: rgba(0, 0, 0, 0.8) transparent transparent transparent;
+    }
+
+    .action-btn:hover .action-tooltip {
+        opacity: 1;
+        visibility: visible;
+        top: -35px;
+    }
+
+    /* Pagination */
+    .pagination-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1rem 1.25rem;
+        border-top: 1px solid rgba(0, 0, 0, 0.05);
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+
+    .pagination {
+        margin-bottom: 0;
+        gap: 0.25rem;
+    }
+
+    .page-link {
+        border: none;
+        border-radius: 0.5rem;
+        padding: 0.5rem 0.75rem;
+        color: var(--text-color);
+        transition: all 0.3s ease;
+    }
+
+    .page-item.active .page-link {
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        color: white;
+        box-shadow: 0 4px 10px rgba(99, 102, 241, 0.2);
+    }
+
+    .page-item:not(.active) .page-link:hover {
+        background-color: rgba(99, 102, 241, 0.1);
+        color: var(--primary-color);
+        transform: translateY(-2px);
+    }
+
+    /* Glass Card */
+    .glass-card {
+        background: rgba(255, 255, 255, 0.9);
+        backdrop-filter: blur(10px);
+        border-radius: 1rem;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+    }
+
+    /* Responsive Adjustments */
+    @@media (max-width: 992px) {
+        .dashboard-header {
+            padding: 1.25rem;
+        }
+
+        .dashboard-title h1 {
+            font-size: 1.75rem;
+        }
+
+        .search-box {
+            width: 100%;
+            min-width: auto;
+        }
+
+        .nav-pills {
+            display: flex;
+            width: 100%;
+            overflow-x: auto;
+            padding: 0.5rem;
+        }
+
+        .nav-pills .nav-link {
+            white-space: nowrap;
+        }
+
+        .hospital-cell {
+            max-width: 150px;
+        }
+
+        .notes-cell {
+            max-width: 150px;
+        }
+    }
+
+    @@media (max-width: 768px) {
+        .dashboard-header .d-flex {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 1rem;
+        }
+
+        .dashboard-header .d-flex > div:last-child {
+            width: 100%;
+        }
+
+        .pagination-container {
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+
+        .table th, .table td {
+            padding: 0.75rem;
+        }
+
+        .action-buttons-cell {
+            flex-wrap: wrap;
+        }
+    }
+
+    @@media (max-width: 576px) {
+        .appointments-dashboard {
+            padding: 1rem 0;
+        }
+
+        .table-responsive {
+            border-radius: 0.75rem;
+        }
+
+        .hospital-cell {
+            max-width: 120px;
+        }
+
+        .notes-cell {
+            max-width: 100px;
+        }
+
+        .status-badge {
+            padding: 0.25rem 0.5rem;
+            font-size: 0.75rem;
+        }
+    }
+
+    /* Animation for counter */
+    @@keyframes countUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .counter {
+        animation: countUp 1s ease forwards;
+    }
+</style>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Initialize AOS animations
+            AOS.init({
+                duration: 800,
+                easing: 'ease-out',
+                once: true
+            });
+
+            // Counter animation
+            const counters = document.querySelectorAll('.counter');
+            counters.forEach(counter => {
+                const target = parseInt(counter.textContent);
+                const duration = 2000; // 2 seconds
+                const step = Math.ceil(target / (duration / 20)); // Update every 20ms
+
+                let current = 0;
+                const updateCounter = () => {
+                    current += step;
+                    if (current > target) {
+                        current = target;
+                        clearInterval(interval);
+                    }
+                    counter.textContent = current;
+                };
+
+                const interval = setInterval(updateCounter, 20);
+            });
+
+            // Search functionality
+            document.getElementById('searchInput').addEventListener('keyup', function () {
+                const searchText = this.value.toLowerCase();
+                filterRows(searchText, 'search');
+            });
+
+            // Tab filtering functionality
+            const tabs = document.querySelectorAll('#appointmentTabs .nav-link');
+            tabs.forEach(tab => {
+                tab.addEventListener('click', function () {
+                    const filterType = this.id.replace('-tab', '');
+                    filterRows('', filterType);
+                });
+            });
+
+            // Function to filter rows based on search text or tab selection
+            function filterRows(searchText, filterType) {
+                const rows = document.querySelectorAll('tbody tr');
+                let visibleCount = 0;
+
+                rows.forEach(row => {
+                    let showRow = true;
+
+                    // Apply search filter if provided
+                    if (searchText) {
+                        const rowText = row.textContent.toLowerCase();
+                        showRow = rowText.includes(searchText);
+                    }
+
+                    // Apply tab filter if not "all"
+                    if (showRow && filterType !== 'search' && filterType !== 'all') {
+                        const statusElement = row.querySelector('.status-badge');
+                        if (statusElement) {
+                            const status = statusElement.textContent.trim().toLowerCase();
+
+                            // Map tab IDs to status text
+                            const statusMap = {
+                                'upcoming': 'scheduled',
+                                'completed': 'completed',
+                                'cancelled': 'cancelled'
+                            };
+
+                            showRow = status.includes(statusMap[filterType]);
+                        }
+                    }
+
+                    // Show or hide the row
+                    if (showRow) {
+                        row.style.display = '';
+                        row.classList.add('table-row-animate');
+                        visibleCount++;
+                    } else {
+                        row.style.display = 'none';
+                        row.classList.remove('table-row-animate');
+                    }
+                });
+
+                // Update pagination info
+                updatePaginationInfo(visibleCount);
+            }
+
+            // Update pagination information
+            function updatePaginationInfo(count) {
+                const paginationInfoElements = document.querySelectorAll('.pagination-container .text-muted .fw-medium');
+                if (paginationInfoElements.length >= 3) {
+                    paginationInfoElements[1].textContent = count;
+                    paginationInfoElements[2].textContent = count;
+                }
+            }
+        });
+    </script>
+}

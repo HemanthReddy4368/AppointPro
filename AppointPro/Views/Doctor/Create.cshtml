@@ -2,7 +2,6 @@
 @{
     ViewData["Title"] = "Add Doctor";
     var hospitals = ViewBag.Hospitals as List<AppointPro.Models.Hospital>;
-    var users = ViewBag.Users as List<AppointPro.Models.ApplicationUser>;
 }
 
 <div class="container py-5">
@@ -14,21 +13,20 @@
                     <form asp-action="Create" autocomplete="off">
                         <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
                         <div class="row g-3">
-                            <div class="col-md-12">
-                                <label asp-for="UserId" class="form-label fw-medium">User</label>
-                                <select asp-for="UserId" class="form-select">
-                                    <option value="">Select User</option>
-                                    @foreach (var user in users)
-                                    {
-                                        <option value="@user.UserId">@user.Name (@user.Email)</option>
-                                    }
-                                </select>
-                                <span asp-validation-for="UserId" class="text-danger small"></span>
-                            </div>
                             <div class="col-md-6">
                                 <label asp-for="Name" class="form-label fw-medium">Name</label>
                                 <input asp-for="Name" class="form-control" />
                                 <span asp-validation-for="Name" class="text-danger small"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="Email" class="form-label fw-medium">Email</label>
+                                <input asp-for="Email" class="form-control" type="email" />
+                                <span asp-validation-for="Email" class="text-danger small"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="PhoneNumber" class="form-label fw-medium">Phone Number</label>
+                                <input asp-for="PhoneNumber" class="form-control" />
+                                <span asp-validation-for="PhoneNumber" class="text-danger small"></span>
                             </div>
                             <div class="col-md-6">
                                 <label asp-for="Specialization" class="form-label fw-medium">Specialization</label>
@@ -54,6 +52,26 @@
                                 <label asp-for="ProfilePicture" class="form-label fw-medium">Profile Picture URL</label>
                                 <input asp-for="ProfilePicture" class="form-control" />
                                 <span asp-validation-for="ProfilePicture" class="text-danger small"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="StartTime" class="form-label fw-medium">Start Time</label>
+                                <input asp-for="StartTime" type="time" class="form-control" />
+                                <span asp-validation-for="StartTime" class="text-danger small"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="EndTime" class="form-label fw-medium">End Time</label>
+                                <input asp-for="EndTime" type="time" class="form-control" />
+                                <span asp-validation-for="EndTime" class="text-danger small"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="SlotsPerDay" class="form-label fw-medium">Max Slots Per Day</label>
+                                <input asp-for="SlotsPerDay" class="form-control" type="number" min="1" max="20" />
+                                <span asp-validation-for="SlotsPerDay" class="text-danger small"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="SlotDurationMinutes" class="form-label fw-medium">Slot Duration (minutes)</label>
+                                <input asp-for="SlotDurationMinutes" class="form-control" type="number" min="15" max="120" step="15" />
+                                <span asp-validation-for="SlotDurationMinutes" class="text-danger small"></span>
                             </div>
                             <div class="col-md-12">
                                 <label asp-for="Bio" class="form-label fw-medium">Bio</label>

@@ -4,6 +4,7 @@ using AppointPro.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AppointPro.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250524165003_addalldata")]
+    partial class addalldata
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -127,9 +130,6 @@ namespace AppointPro.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<TimeSpan>("EndTime")
-                        .HasColumnType("time");
-
                     b.Property<int>("HospitalId")
                         .HasColumnType("int");
 
@@ -161,19 +161,10 @@ namespace AppointPro.Migrations
                     b.Property<double?>("Rating")
                         .HasColumnType("float");
 
-                    b.Property<int>("SlotDurationMinutes")
-                        .HasColumnType("int");
-
-                    b.Property<int>("SlotsPerDay")
-                        .HasColumnType("int");
-
                     b.Property<string>("Specialization")
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
-
-                    b.Property<TimeSpan>("StartTime")
-                        .HasColumnType("time");
 
                     b.HasKey("DoctorId");
 
@@ -234,51 +225,6 @@ namespace AppointPro.Migrations
                     b.ToTable("Hospitals");
                 });
 
-            modelBuilder.Entity("AppointPro.Models.Payment", b =>
-                {
-                    b.Property<int>("PaymentId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("PaymentId"));
-
-                    b.Property<decimal>("Amount")
-                        .HasColumnType("decimal(18, 2)");
-
-                    b.Property<DateTime>("AppointmentDateTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int?>("AppointmentId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("DoctorId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Notes")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("PatientId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("PaymentDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("Status")
-                        .HasColumnType("int");
-
-                    b.Property<string>("TransactionId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("PaymentId");
-
-                    b.HasIndex("AppointmentId");
-
-                    b.ToTable("Payments");
-                });
-
             modelBuilder.Entity("AppointPro.Models.Appointment", b =>
                 {
                     b.HasOne("AppointPro.Models.Doctor", "Doctor")
@@ -307,15 +253,6 @@ namespace AppointPro.Migrations
                         .IsRequired();
 
                     b.Navigation("Hospital");
-                });
-
-            modelBuilder.Entity("AppointPro.Models.Payment", b =>
-                {
-                    b.HasOne("AppointPro.Models.Appointment", "Appointment")
-                        .WithMany()
-                        .HasForeignKey("AppointmentId");
-
-                    b.Navigation("Appointment");
                 });
 #pragma warning restore 612, 618
         }

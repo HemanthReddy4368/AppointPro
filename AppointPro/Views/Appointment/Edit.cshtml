@@ -1,0 +1,99 @@
+﻿@model AppointPro.Models.Appointment
+@{
+    ViewData["Title"] = "Edit Appointment";
+    var hospitals = ViewBag.Hospitals as List<AppointPro.Models.Hospital>;
+    var doctors = ViewBag.Doctors as List<AppointPro.Models.Doctor>;
+}
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8 col-md-10">
+            <div class="card shadow-lg border-0 rounded-4 glass-card">
+                <div class="card-body p-5">
+                    <h2 class="fw-bold mb-4 text-center">Edit Appointment</h2>
+                    <form asp-action="Edit" autocomplete="off">
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+                        <input type="hidden" asp-for="AppointmentId" />
+                        <input type="hidden" asp-for="PatientId" />
+
+                        <div class="row g-3">
+                            <div class="col-md-12">
+                                <label asp-for="DoctorId" class="form-label fw-medium">Doctor</label>
+                                <select asp-for="DoctorId" class="form-select">
+                                    <option value="">Select Doctor</option>
+                                    @foreach (var doctor in doctors)
+                                    {
+                                        <option value="@doctor.DoctorId">
+                                            @doctor.Name - @doctor.Specialization
+                                            @if (doctor.Hospital != null)
+                                            {
+                                                <text>(@doctor.Hospital.Name)</text>
+                                            }
+                                            else
+                                            {
+                                                <text>(No Hospital)</text>
+                                            }
+                                        </option>
+                                    }
+                                </select>
+                                <span asp-validation-for="DoctorId" class="text-danger small"></span>
+                            </div>
+
+                            <div class="col-md-12">
+                                <label asp-for="AppointmentDate" class="form-label fw-medium"></label>
+                                <input asp-for="AppointmentDate" type="datetime-local" class="form-control" />
+                                <span asp-validation-for="AppointmentDate" class="text-danger small"></span>
+                            </div>
+
+                            <div class="col-md-12">
+                                <label asp-for="Notes" class="form-label fw-medium"></label>
+                                <textarea asp-for="Notes" class="form-control" rows="3"></textarea>
+                                <span asp-validation-for="Notes" class="text-danger small"></span>
+                            </div>
+
+                            <div class="col-md-12">
+                                <label asp-for="Status" class="form-label fw-medium"></label>
+                                <select asp-for="Status" asp-items="Html.GetEnumSelectList<AppointmentStatus>()" class="form-select"></select>
+                                <span asp-validation-for="Status" class="text-danger small"></span>
+                            </div>
+                        </div>
+
+                        <div class="d-grid gap-2 mt-4">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="bi bi-save me-2"></i>Save Changes
+                            </button>
+                            <a asp-action="Index" class="btn btn-outline-secondary">
+                                <i class="bi bi-arrow-left me-2"></i>Back to List
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .glass-card {
+        background: rgba(255,255,255,0.85);
+        backdrop-filter: blur(8px);
+        border-radius: 1.5rem;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.08);
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, #4f46e5, #0ea5e9);
+        border: none;
+        font-weight: 500;
+    }
+
+        .btn-primary:hover {
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.2);
+        }
+</style>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

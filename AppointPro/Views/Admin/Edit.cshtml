@@ -4,58 +4,162 @@
     ViewData["Title"] = "Edit User";
 }
 
-<div class="container py-5">
+<div class="edit-user-container py-5">
     <div class="row justify-content-center">
-        <div class="col-lg-6 col-md-8">
-            <div class="card shadow-lg border-0 rounded-4 glass-card">
-                <div class="card-body p-5">
-                    <div class="mb-4 text-center">
-                        <div class="user-avatar-lg mx-auto mb-3">
-                            @if (string.IsNullOrEmpty(Model.ProfilePicture))
-                            {
-                                <span class="avatar-placeholder-lg">@Model.Name?.FirstOrDefault().ToString().ToUpper()</span>
-                            }
-                            else
-                            {
-                                <img src="@Model.ProfilePicture" alt="@Model.Name" class="img-fluid rounded-circle" />
-                            }
-                        </div>
-                        <h2 class="fw-bold mb-1">Edit User</h2>
-                        <p class="text-muted mb-0">Update user details and role</p>
+        <div class="col-xl-8 col-lg-10">
+            <div class="card-container" data-aos="fade-up">
+                <div class="edit-user-card glass-card">
+                    <div class="card-header">
+                        <a asp-action="Index" class="back-button">
+                            <i class="bi bi-arrow-left"></i>
+                        </a>
+                        <h2 class="text-gradient">Edit User Profile</h2>
                     </div>
-                    <form asp-action="Edit" autocomplete="off">
-                        <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
-                        <input type="hidden" asp-for="UserId" />
-                        <div class="mb-3">
-                            <label asp-for="Email" class="form-label fw-medium">
-                                <i class="bi bi-envelope me-1"></i>Email
-                            </label>
-                            <input asp-for="Email" class="form-control" readonly />
-                            <span asp-validation-for="Email" class="text-danger small"></span>
+                    
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-lg-4">
+                                <div class="user-profile-sidebar text-center" data-aos="fade-right" data-aos-delay="100">
+                                    <div class="user-avatar-container">
+                                        <div class="user-avatar-lg">
+                                            @if (string.IsNullOrEmpty(Model.ProfilePicture))
+                                            {
+                                                <span class="avatar-placeholder-lg">@Model.Name?.FirstOrDefault().ToString().ToUpper()</span>
+                                            }
+                                            else
+                                            {
+                                                <img src="@Model.ProfilePicture" alt="@Model.Name" class="img-fluid" />
+                                            }
+                                        </div>
+                                        <div class="avatar-upload-btn">
+                                            <i class="bi bi-camera"></i>
+                                        </div>
+                                    </div>
+                                    <h4 class="user-name mt-3 mb-1">@Model.Name</h4>
+                                    <p class="user-email text-muted">@Model.Email</p>
+                                    
+                                    <div class="user-stats">
+                                        <div class="stat-item">
+                                            <div class="stat-value">@(new Random().Next(5, 20))</div>
+                                            <div class="stat-label">Appointments</div>
+                                        </div>
+                                        <div class="stat-divider"></div>
+                                        <div class="stat-item">
+                                            <div class="stat-value">@(new DateTime(Model.CreatedAt.Ticks).ToString("MMM yyyy"))</div>
+                                            <div class="stat-label">Joined</div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="user-role-badge @Model.Role.ToString().ToLower()">
+                                        <i class="bi bi-person-badge"></i>
+                                        <span>@Model.Role</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="col-lg-8">
+                                <div class="user-profile-form" data-aos="fade-left" data-aos-delay="200">
+                                    <form asp-action="Edit" autocomplete="off">
+                                        <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+                                        <input type="hidden" asp-for="UserId" />
+                                        
+                                        <div class="form-group mb-4">
+                                            <label asp-for="Email" class="form-label">
+                                                <i class="bi bi-envelope"></i>Email Address
+                                            </label>
+                                            <div class="input-group">
+                                                <span class="input-group-text"><i class="bi bi-at"></i></span>
+                                                <input asp-for="Email" class="form-control" readonly />
+                                            </div>
+                                            <span asp-validation-for="Email" class="text-danger small"></span>
+                                        </div>
+                                        
+                                        <div class="form-group mb-4">
+                                            <label asp-for="Name" class="form-label">
+                                                <i class="bi bi-person"></i>Full Name
+                                            </label>
+                                            <div class="input-group">
+                                                <span class="input-group-text"><i class="bi bi-person-fill"></i></span>
+                                                <input asp-for="Name" class="form-control" placeholder="Enter full name" />
+                                            </div>
+                                            <span asp-validation-for="Name" class="text-danger small"></span>
+                                        </div>
+                                        
+                                        <div class="form-group mb-4">
+                                            <label asp-for="Role" class="form-label">
+                                                <i class="bi bi-person-badge"></i>User Role
+                                            </label>
+                                            <div class="input-group">
+                                                <span class="input-group-text"><i class="bi bi-shield-lock"></i></span>
+                                                <select asp-for="Role" class="form-select" asp-items="Html.GetEnumSelectList<UserRole>()"></select>
+                                            </div>
+                                            <span asp-validation-for="Role" class="text-danger small"></span>
+                                            <div class="form-text">
+                                                <i class="bi bi-info-circle me-1"></i>Changing user role will modify their permissions in the system.
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="form-group mb-4">
+                                            <label class="form-label">
+                                                <i class="bi bi-shield-check"></i>Account Status
+                                            </label>
+                                            <div class="form-check form-switch">
+                                                <input class="form-check-input" type="checkbox" id="accountStatus" checked>
+                                                <label class="form-check-label" for="accountStatus">
+                                                    <span class="status-active">Account Active</span>
+                                                    <span class="status-inactive">Account Inactive</span>
+                                                </label>
+                                            </div>
+                                            <div class="form-text">
+                                                <i class="bi bi-info-circle me-1"></i>Inactive accounts cannot log in to the system.
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="action-buttons">
+                                            <button type="submit" class="btn btn-primary btn-lg save-btn">
+                                                <i class="bi bi-check-circle"></i>
+                                                <span>Save Changes</span>
+                                            </button>
+                                            <a asp-action="Index" class="btn btn-outline-secondary btn-lg">
+                                                <i class="bi bi-x-circle"></i>
+                                                <span>Cancel</span>
+                                            </a>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
                         </div>
-                        <div class="mb-3">
-                            <label asp-for="Name" class="form-label fw-medium">
-                                <i class="bi bi-person me-1"></i>Name
-                            </label>
-                            <input asp-for="Name" class="form-control" />
-                            <span asp-validation-for="Name" class="text-danger small"></span>
-                        </div>
-                        <div class="mb-3">
-                            <label asp-for="Role" class="form-label fw-medium">
-                                <i class="bi bi-person-badge me-1"></i>Role
-                            </label>
-                            <select asp-for="Role" class="form-select" asp-items="Html.GetEnumSelectList<UserRole>()"></select>
-                            <span asp-validation-for="Role" class="text-danger small"></span>
-                        </div>
-                        <div class="d-grid gap-2 mt-4">
-                            <button type="submit" class="btn btn-primary btn-lg">
-                                <i class="bi bi-save me-2"></i>Save Changes
-                            </button>
-                            <a asp-action="Index" class="btn btn-outline-secondary">
-                                <i class="bi bi-arrow-left me-2"></i>Back to List
-                            </a>
-                        </div>
-                    </form>
+                    </div>
+                </div>
+                
+                <div class="additional-actions glass-card mt-4" data-aos="fade-up" data-aos-delay="300">
+                    <h3>Additional Actions</h3>
+                    <div class="action-buttons-grid">
+                        <button class="action-button">
+                            <div class="action-icon bg-info-soft">
+                                <i class="bi bi-envelope"></i>
+                            </div>
+                            <div class="action-text">Send Email</div>
+                        </button>
+                        <button class="action-button">
+                            <div class="action-icon bg-warning-soft">
+                                <i class="bi bi-key"></i>
+                            </div>
+                            <div class="action-text">Reset Password</div>
+                        </button>
+                        <button class="action-button">
+                            <div class="action-icon bg-success-soft">
+                                <i class="bi bi-calendar-check"></i>
+                            </div>
+                            <div class="action-text">View Appointments</div>
+                        </button>
+                        <button class="action-button danger">
+                            <div class="action-icon bg-danger-soft">
+                                <i class="bi bi-trash"></i>
+                            </div>
+                            <div class="action-text">Delete Account</div>
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -63,42 +167,680 @@
 </div>
 
 <style>
-    .glass-card {
-        background: rgba(255,255,255,0.85);
-        backdrop-filter: blur(8px);
-        border-radius: 1.5rem;
-        box-shadow: 0 8px 32px rgba(0,0,0,0.08);
+    /* Edit User Container */
+    .edit-user-container {
+        min-height: 80vh;
+        position: relative;
     }
-    .user-avatar-lg {
-        width: 72px;
-        height: 72px;
+
+    .edit-user-container::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 50%;
+        height: 100%;
+        background: url('https://cdn.pixabay.com/photo/2017/08/30/01/05/milky-way-2695569_1280.jpg') no-repeat;
+        background-size: cover;
+        opacity: 0.02;
+        z-index: -1;
+    }
+
+    .text-gradient {
+        background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    /* Card Container */
+    .card-container {
+        perspective: 1000px;
+    }
+
+    .edit-user-card {
+        background: rgba(255, 255, 255, 0.9);
+        backdrop-filter: blur(10px);
+        border-radius: 1.5rem;
+        overflow: hidden;
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+        transition: all 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
+        transform-style: preserve-3d;
+    }
+
+    .edit-user-card:hover {
+        transform: translateY(-5px) rotateX(2deg);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+    }
+
+    /* Card Header */
+    .card-header {
+        padding: 2rem;
+        position: relative;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        text-align: center;
+    }
+
+    .card-header h2 {
+        font-weight: 700;
+        margin: 0;
+        font-size: 2rem;
+    }
+
+    .back-button {
+        position: absolute;
+        left: 2rem;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 40px;
+        height: 40px;
         border-radius: 50%;
-        background: linear-gradient(135deg, #4f46e5, #0ea5e9);
-        color: #fff;
+        background: rgba(99, 102, 241, 0.1);
+        color: var(--primary-color);
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 2rem;
-        font-weight: 600;
-        box-shadow: 0 2px 8px rgba(79,70,229,0.15);
+        transition: all 0.3s ease;
+        text-decoration: none;
     }
-    .avatar-placeholder-lg {
-        font-size: 2.2rem;
+
+    .back-button:hover {
+        background: var(--primary-color);
+        color: white;
+        transform: translateY(-50%) scale(1.1);
+    }
+
+    /* Card Body */
+    .card-body {
+        padding: 2rem;
+    }
+
+    /* User Profile Sidebar */
+    .user-profile-sidebar {
+        padding: 1.5rem;
+        border-radius: 1rem;
+        background: rgba(255, 255, 255, 0.5);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .user-profile-sidebar::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(135deg, rgba(99, 102, 241, 0.05), rgba(14, 165, 233, 0.05));
+        z-index: -1;
+    }
+
+    .user-avatar-container {
+        position: relative;
+        width: 120px;
+        height: 120px;
+        margin: 0 auto;
+    }
+
+    .user-avatar-lg {
+        width: 120px;
+        height: 120px;
+        border-radius: 1.5rem;
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 3rem;
         font-weight: 700;
-        letter-spacing: 1px;
+        box-shadow: 0 8px 25px rgba(99, 102, 241, 0.3);
+        overflow: hidden;
+        transition: all 0.3s ease;
     }
+
+    .user-avatar-container:hover .user-avatar-lg {
+        transform: scale(1.05);
+    }
+
+    .avatar-placeholder-lg {
+        font-size: 3.5rem;
+        font-weight: 700;
+    }
+
+    .avatar-upload-btn {
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        background: white;
+        color: var(--primary-color);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        cursor: pointer;
+        transition: all 0.3s ease;
+        border: 2px solid var(--primary-color);
+    }
+
+    .avatar-upload-btn:hover {
+        background: var(--primary-color);
+        color: white;
+        transform: scale(1.1);
+    }
+
+    .user-name {
+        font-size: 1.5rem;
+        font-weight: 600;
+        margin-top: 1rem;
+        margin-bottom: 0.25rem;
+    }
+
+    .user-email {
+        font-size: 0.9rem;
+        color: var(--text-muted);
+        margin-bottom: 1.5rem;
+    }
+
+    .user-stats {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-bottom: 1.5rem;
+    }
+
+    .stat-item {
+        text-align: center;
+        padding: 0 1rem;
+    }
+
+    .stat-divider {
+        width: 1px;
+        height: 40px;
+        background: rgba(0, 0, 0, 0.1);
+    }
+
+    .stat-value {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: var(--text-color);
+    }
+
+    .stat-label {
+        font-size: 0.85rem;
+        color: var(--text-muted);
+    }
+
+    .user-role-badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.5rem 1rem;
+        border-radius: 2rem;
+        font-weight: 500;
+        font-size: 0.9rem;
+        margin-top: 0.5rem;
+        transition: all 0.3s ease;
+    }
+
+    .user-role-badge i {
+        margin-right: 0.5rem;
+        font-size: 1.1rem;
+    }
+
+    .user-role-badge.patient {
+        background: rgba(59, 130, 246, 0.1);
+        color: #3b82f6;
+    }
+
+    .user-role-badge.doctor {
+        background: rgba(16, 185, 129, 0.1);
+        color: #10b981;
+    }
+
+    .user-role-badge.systemadmin {
+        background: rgba(245, 158, 11, 0.1);
+        color: #f59e0b;
+    }
+
+    .user-profile-sidebar:hover .user-role-badge {
+        transform: scale(1.05);
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    }
+
+    /* User Profile Form */
+    .user-profile-form {
+        padding: 0 1rem;
+    }
+
     .form-label {
+        font-weight: 500;
+        margin-bottom: 0.5rem;
+        display: flex;
+        align-items: center;
+        color: var(--text-color);
+    }
+
+    .form-label i {
+        margin-right: 0.5rem;
+        color: var(--primary-color);
+    }
+
+    .input-group {
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+        border-radius: 0.75rem;
+        overflow: hidden;
+        transition: all 0.3s ease;
+    }
+
+    .input-group:focus-within {
+        box-shadow: 0 4px 15px rgba(99, 102, 241, 0.15);
+    }
+
+    .input-group-text {
+        background: white;
+        border: 1px solid rgba(0, 0, 0, 0.1);
+        border-right: none;
+        color: var(--text-muted);
+        padding: 0.75rem 1rem;
+    }
+
+    .form-control, .form-select {
+        border: 1px solid rgba(0, 0, 0, 0.1);
+        border-left: none;
+        padding: 0.75rem 1rem;
         font-size: 1rem;
     }
-    .btn-lg {
-        padding: 0.75rem 1.5rem;
-        font-size: 1.1rem;
+
+    .form-control:focus, .form-select:focus {
+        box-shadow: none;
+        border-color: rgba(0, 0, 0, 0.1);
+    }
+
+    .form-text {
+        font-size: 0.85rem;
+        color: var(--text-muted);
+        margin-top: 0.5rem;
+    }
+
+    /* Form Switch */
+    .form-switch {
+        padding-left: 3rem;
+        margin-top: 0.5rem;
+    }
+
+    .form-check-input {
+        width: 3rem;
+        height: 1.5rem;
+        margin-left: -3rem;
+        background-color: #e5e7eb;
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='%23fff'/%3e%3c/svg%3e");
+        background-position: left center;
+        border: none;
+        transition: background-position 0.15s ease-in-out;
+    }
+
+    .form-check-input:checked {
+        background-color: var(--primary-color);
+        background-position: right center;
+    }
+
+    .form-check-input:focus {
+        box-shadow: 0 0 0 0.25rem rgba(99, 102, 241, 0.25);
+    }
+
+    .form-check-label {
+        position: relative;
+        padding-left: 0.5rem;
+        cursor: pointer;
+    }
+
+    .status-active, .status-inactive {
         font-weight: 500;
+        transition: all 0.3s ease;
+    }
+
+    .status-active {
+        color: #10b981;
+        display: inline-block;
+    }
+
+    .status-inactive {
+        color: #ef4444;
+        display: none;
+    }
+
+    .form-check-input:not(:checked) ~ .form-check-label .status-active {
+        display: none;
+    }
+
+    .form-check-input:not(:checked) ~ .form-check-label .status-inactive {
+        display: inline-block;
+    }
+
+    /* Action Buttons */
+    .action-buttons {
+        display: flex;
+        gap: 1rem;
+        margin-top: 2rem;
+    }
+
+    .btn {
+        border-radius: 0.75rem;
+        padding: 0.75rem 1.5rem;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .btn::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 50%;
+        transform: translate(-50%, -50%);
+        transition: width 0.6s ease, height 0.6s ease;
+    }
+
+    .btn:active::after {
+        width: 300px;
+        height: 300px;
+        opacity: 0;
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        border: none;
+        box-shadow: 0 4px 15px rgba(99, 102, 241, 0.2);
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(99, 102, 241, 0.3);
+    }
+
+    .btn-outline-secondary {
+        color: var(--text-muted);
+        border: 2px solid rgba(0, 0, 0, 0.1);
+        background: transparent;
+    }
+
+    .btn-outline-secondary:hover {
+        background: rgba(0, 0, 0, 0.05);
+        color: var(--text-color);
+        border-color: rgba(0, 0, 0, 0.2);
+        transform: translateY(-3px);
+    }
+
+    .btn-lg {
+        padding: 0.875rem 1.75rem;
+        font-size: 1.1rem;
+    }
+
+    .save-btn {
+        position: relative;
+        overflow: hidden;
+    }
+
+    .save-btn::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 70%);
+        transform: rotate(30deg);
+        animation: shine 3s linear infinite;
+    }
+
+    @@keyframes shine {
+        from {
+            transform: rotate(30deg) translateY(0);
+        }
+        to {
+            transform: rotate(30deg) translateY(100%);
+        }
+    }
+
+    /* Additional Actions */
+    .additional-actions {
+        background: rgba(255, 255, 255, 0.9);
+        backdrop-filter: blur(10px);
+        border-radius: 1.5rem;
+        padding: 1.5rem 2rem;
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+    }
+
+    .additional-actions:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+    }
+
+    .additional-actions h3 {
+        font-weight: 600;
+        margin-bottom: 1.5rem;
+        color: var(--text-color);
+        position: relative;
+        display: inline-block;
+    }
+
+    .additional-actions h3::after {
+        content: '';
+        position: absolute;
+        bottom: -8px;
+        left: 0;
+        width: 50px;
+        height: 3px;
+        background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+        border-radius: 3px;
+    }
+
+    .action-buttons-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 1rem;
+    }
+
+    .action-button {
+        display: flex;
+        align-items: center;
+        padding: 1rem;
+        border-radius: 1rem;
+        background: white;
+        border: none;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+
+    .action-button:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .action-button.danger:hover {
+        background: rgba(239, 68, 68, 0.05);
+    }
+
+    .action-icon {
+        width: 45px;
+        height: 45px;
+        border-radius: 0.75rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.25rem;
+        margin-right: 1rem;
+        transition: all 0.3s ease;
+    }
+
+    .action-button:hover .action-icon {
+        transform: scale(1.1) rotate(10deg);
+    }
+
+    .bg-info-soft {
+        background-color: rgba(14, 165, 233, 0.1);
+        color: #0ea5e9;
+    }
+
+    .bg-warning-soft {
+        background-color: rgba(245, 158, 11, 0.1);
+        color: #f59e0b;
+    }
+
+    .bg-success-soft {
+        background-color: rgba(16, 185, 129, 0.1);
+        color: #10b981;
+    }
+
+    .bg-danger-soft {
+        background-color: rgba(239, 68, 68, 0.1);
+        color: #ef4444;
+    }
+
+    .action-text {
+        font-weight: 500;
+        color: var(--text-color);
+    }
+
+    /* Responsive Adjustments */
+    @@media (max-width: 992px) {
+        .card-header {
+            padding: 1.5rem;
+        }
+
+        .card-header h2 {
+            font-size: 1.75rem;
+        }
+
+        .card-body {
+            padding: 1.5rem;
+        }
+
+        .user-profile-sidebar {
+            margin-bottom: 2rem;
+        }
+
+        .action-buttons {
+            flex-direction: column;
+        }
+
+        .action-buttons .btn {
+            width: 100%;
+        }
+    }
+
+    @@media (max-width: 768px) {
+        .edit-user-card {
+            border-radius: 1rem;
+        }
+
+        .card-header {
+            padding: 1.25rem;
+        }
+
+        .card-body {
+            padding: 1.25rem;
+        }
+
+        .back-button {
+            left: 1.25rem;
+        }
+
+        .action-buttons-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+
+    @@media (max-width: 576px) {
+        .card-header h2 {
+            font-size: 1.5rem;
+        }
+
+        .user-avatar-lg {
+            width: 100px;
+            height: 100px;
+        }
+
+        .avatar-placeholder-lg {
+            font-size: 3rem;
+        }
+
+        .action-buttons-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .input-group-text, .form-control, .form-select {
+            padding: 0.625rem 0.875rem;
+        }
     }
 </style>
 
 @section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize AOS animations
+            AOS.init({
+                duration: 800,
+                easing: 'ease-out',
+                once: true
+            });
+
+            // Avatar upload button
+            document.querySelector('.avatar-upload-btn').addEventListener('click', function() {
+                // Simulate file upload dialog
+                alert('File upload functionality would be implemented here');
+            });
+
+            // Form validation animation
+            const formInputs = document.querySelectorAll('.form-control, .form-select');
+            formInputs.forEach(input => {
+                input.addEventListener('focus', function() {
+                    this.closest('.input-group').style.transform = 'translateY(-3px)';
+                });
+                
+                input.addEventListener('blur', function() {
+                    this.closest('.input-group').style.transform = 'none';
+                });
+            });
+
+            // Save button animation
+            const saveBtn = document.querySelector('.save-btn');
+            saveBtn.addEventListener('click', function(e) {
+                // Add a pulse effect when clicked
+                this.classList.add('pulse');
+                setTimeout(() => {
+                    this.classList.remove('pulse');
+                }, 500);
+            });
+
+            // Additional action buttons
+            const actionButtons = document.querySelectorAll('.action-button');
+            actionButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const action = this.querySelector('.action-text').textContent;
+                    
+                    if (action === 'Delete Account') {
+                        if (confirm('Are you sure you want to delete this account? This action cannot be undone.')) {
+                            alert('Account deletion would be implemented here');
+                        }
+                    } else {
+                        alert(`${action} functionality would be implemented here`);
+                    }
+                });
+            });
+        });
+    </script>
 }

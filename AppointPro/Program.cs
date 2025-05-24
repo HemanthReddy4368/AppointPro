@@ -1,10 +1,14 @@
+using AppointPro;
 using AppointPro.Data;
+using AppointPro.Services;
 using Microsoft.EntityFrameworkCore;
+using Stripe;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+builder.Services.AddScoped<IEmailService, EmailService>();
 
 // Add DbContext
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
@@ -22,6 +26,9 @@ builder.Services.AddAuthentication(options =>
     options.ClientSecret = "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";
     options.CallbackPath = "/signin-google";
 });
+
+builder.Services.Configure<StripeSettings>(builder.Configuration.GetSection("Stripe"));
+StripeConfiguration.ApiKey = builder.Configuration.GetSection("Stripe")["SecretKey"];
 
 var app = builder.Build();
 

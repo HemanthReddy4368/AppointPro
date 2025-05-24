@@ -13,6 +13,8 @@ namespace AppointPro.Data
         public DbSet<ApplicationUser> Users { get; set; }
         public DbSet<Hospital> Hospitals { get; set; }
         public DbSet<Doctor> Doctors { get; set; }
+        public DbSet<Appointment> Appointments { get; set; }
+        public DbSet<Payment> Payments { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -23,18 +25,24 @@ namespace AppointPro.Data
                 .HasIndex(u => u.Email)
                 .IsUnique();
 
-            // Configure the relationship between Doctor and ApplicationUser
+            // Add unique constraint for Doctor Email
             modelBuilder.Entity<Doctor>()
-                .HasOne(d => d.User)
+                .HasIndex(d => d.Email)
+                .IsUnique();
+
+            // Configure the relationship between Doctor and Hospital
+            modelBuilder.Entity<Doctor>()
+                .HasOne(d => d.Hospital)
                 .WithMany()
-                .HasForeignKey(d => d.UserId)
+                .HasForeignKey(d => d.HospitalId)
                 .OnDelete(DeleteBehavior.Restrict); // Prevent cascade delete
 
-            modelBuilder.Entity<Doctor>()
-        .HasOne(d => d.Hospital)
-        .WithMany()
-        .HasForeignKey(d => d.HospitalId)
-        .OnDelete(DeleteBehavior.Restrict); // Prevent cascade delete
+            // Configure the relationship between Payment and Appointment
+            modelBuilder.Entity<Payment>()
+                .HasOne(p => p.Appointment)
+                .WithMany()
+                .HasForeignKey(p => p.AppointmentId)
+                .OnDelete(DeleteBehavior.SetNull); // This allows the appointment to be deleted
         }
     }
 }
