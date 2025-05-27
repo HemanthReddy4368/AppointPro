@@ -1,0 +1,852 @@
+﻿@model AppointPro.Models.Doctor
+
+@{
+    ViewData["Title"] = "Create Doctor Profile";
+    Layout = "_DashboardLayout";
+}
+
+@section Styles {
+    <style>
+        .profile-header {
+            background: linear-gradient(135deg, #4e73df 0%, #224abe 100%);
+            color: white;
+            padding: 2.5rem;
+            border-radius: 0.75rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+            position: relative;
+            overflow: hidden;
+        }
+
+            .profile-header::before {
+                content: '';
+                position: absolute;
+                top: -50%;
+                right: -50%;
+                width: 100%;
+                height: 200%;
+                background: rgba(255, 255, 255, 0.1);
+                transform: rotate(30deg);
+                pointer-events: none;
+            }
+
+        .form-section {
+            background-color: white;
+            border-radius: 0.75rem;
+            box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.1);
+            margin-bottom: 1.75rem;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+            .form-section:hover {
+                box-shadow: 0 0.5rem 2rem 0 rgba(58, 59, 69, 0.15);
+            }
+
+        .form-section-header {
+            padding: 1.25rem 1.5rem;
+            border-bottom: 1px solid #e3e6f0;
+            background-color: #f8f9fc;
+            border-top-left-radius: 0.75rem;
+            border-top-right-radius: 0.75rem;
+            display: flex;
+            align-items: center;
+        }
+
+            .form-section-header i {
+                margin-right: 0.75rem;
+                color: #4e73df;
+                font-size: 1.25rem;
+            }
+
+            .form-section-header h5 {
+                font-weight: 700;
+                margin: 0;
+                color: #5a5c69;
+            }
+
+        .form-section-body {
+            padding: 1.75rem;
+        }
+
+        .profile-image-container {
+            width: 160px;
+            height: 160px;
+            border-radius: 50%;
+            overflow: hidden;
+            margin: 0 auto 1.25rem auto;
+            border: 5px solid rgba(255, 255, 255, 0.3);
+            position: relative;
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+            transition: all 0.3s ease;
+        }
+
+            .profile-image-container:hover {
+                transform: scale(1.05);
+            }
+
+        .profile-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: all 0.3s ease;
+        }
+
+        .profile-image-placeholder {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #e9ecef;
+            color: #6c757d;
+            font-size: 3.5rem;
+        }
+
+        .image-upload-btn {
+            position: absolute;
+            bottom: 5px;
+            right: 5px;
+            background-color: #4e73df;
+            color: white;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0.15rem 0.5rem rgba(0, 0, 0, 0.2);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid white;
+        }
+
+            .image-upload-btn:hover {
+                background-color: #224abe;
+                transform: scale(1.1);
+            }
+
+        .specialty-badge {
+            margin-right: 0.5rem;
+            margin-bottom: 0.75rem;
+            padding: 0.5rem 0.75rem;
+            border-radius: 2rem;
+            background-color: #eaecf4;
+            display: inline-flex;
+            align-items: center;
+            transition: all 0.2s ease;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+            .specialty-badge:hover {
+                background-color: #d4d6e0;
+            }
+
+            .specialty-badge i {
+                cursor: pointer;
+                margin-left: 0.5rem;
+                color: #858796;
+                transition: all 0.2s ease;
+            }
+
+                .specialty-badge i:hover {
+                    color: #e74a3b;
+                }
+
+        .time-slot {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding: 1rem;
+            border: 1px solid #e3e6f0;
+            border-radius: 0.5rem;
+            transition: all 0.2s ease;
+        }
+
+            .time-slot:hover {
+                background-color: #f8f9fc;
+                border-color: #d1d3e2;
+            }
+
+        .time-slot-day {
+            width: 100px;
+            font-weight: 600;
+        }
+
+        .time-slot-hours {
+            flex: 1;
+        }
+
+        .time-slot-actions {
+            width: 50px;
+            text-align: right;
+        }
+
+        #specialtyInput {
+            border-top-right-radius: 0;
+            border-bottom-right-radius: 0;
+            border: 1px solid #d1d3e2;
+        }
+
+        #addSpecialtyBtn {
+            border-top-left-radius: 0;
+            border-bottom-left-radius: 0;
+        }
+
+        .required-field::after {
+            content: "*";
+            color: #e74a3b;
+            margin-left: 4px;
+            font-weight: bold;
+        }
+
+        .form-label {
+            font-weight: 600;
+            color: #5a5c69;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-control, .form-select {
+            padding: 0.75rem 1rem;
+            border: 1px solid #d1d3e2;
+            border-radius: 0.5rem;
+            font-size: 0.9rem;
+            transition: all 0.2s ease;
+        }
+
+            .form-control:focus, .form-select:focus {
+                border-color: #bac8f3;
+                box-shadow: 0 0 0 0.25rem rgba(78, 115, 223, 0.25);
+            }
+
+        .form-check-input {
+            width: 1.25rem;
+            height: 1.25rem;
+            margin-top: 0.25rem;
+            cursor: pointer;
+        }
+
+            .form-check-input:checked {
+                background-color: #4e73df;
+                border-color: #4e73df;
+            }
+
+        .form-check-label {
+            padding-left: 0.5rem;
+            cursor: pointer;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            font-weight: 600;
+            border-radius: 0.5rem;
+            transition: all 0.2s ease;
+        }
+
+        .btn-primary {
+            background-color: #4e73df;
+            border-color: #4e73df;
+        }
+
+            .btn-primary:hover {
+                background-color: #2e59d9;
+                border-color: #2653d4;
+            }
+
+        .btn-outline-secondary {
+            color: #858796;
+            border-color: #d1d3e2;
+        }
+
+            .btn-outline-secondary:hover {
+                background-color: #eaecf4;
+                color: #6e707e;
+            }
+
+        .working-days-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .day-checkbox {
+            display: none;
+        }
+
+        .day-label {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            border-radius: 2rem;
+            background-color: #eaecf4;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-weight: 500;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .day-checkbox:checked + .day-label {
+            background-color: #4e73df;
+            color: white;
+        }
+
+        .progress-container {
+            margin-bottom: 2rem;
+        }
+
+        .progress {
+            height: 0.5rem;
+            border-radius: 1rem;
+            background-color: #eaecf4;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            background: linear-gradient(90deg, #4e73df 0%, #224abe 100%);
+            transition: width 0.3s ease;
+        }
+
+        .progress-steps {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 0.5rem;
+        }
+
+        .progress-step {
+            font-size: 0.8rem;
+            color: #858796;
+            position: relative;
+            text-align: center;
+            width: 33.33%;
+        }
+
+            .progress-step.active {
+                color: #4e73df;
+                font-weight: 600;
+            }
+
+        .tooltip-icon {
+            color: #858796;
+            font-size: 0.9rem;
+            margin-left: 0.5rem;
+            cursor: pointer;
+        }
+
+        .section-description {
+            color: #858796;
+            font-size: 0.9rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .input-group-text {
+            background-color: #f8f9fc;
+            border: 1px solid #d1d3e2;
+            color: #6e707e;
+        }
+
+        .specialties-container {
+            min-height: 45px;
+            padding: 0.5rem 0;
+        }
+
+        .empty-specialties {
+            color: #858796;
+            font-style: italic;
+            font-size: 0.9rem;
+        }
+    </style>
+}
+
+<div class="container-fluid py-4">
+    <div class="profile-header text-center">
+        <h2 class="mb-3">Create Your Doctor Profile</h2>
+        <p class="mb-4">Complete your professional profile to start accepting appointments</p>
+
+        <div class="progress-container">
+            <div class="progress">
+                <div class="progress-bar" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" id="profileProgress"></div>
+            </div>
+            <div class="progress-steps">
+                <div class="progress-step active" data-step="1">Basic Info</div>
+                <div class="progress-step" data-step="2">Professional Details</div>
+                <div class="progress-step" data-step="3">Availability</div>
+            </div>
+        </div>
+    </div>
+
+    <form asp-action="CreateProfile" method="post" enctype="multipart/form-data" id="doctorProfileForm">
+        <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+        <!-- Basic Information -->
+        <div class="form-section" id="section1">
+            <div class="form-section-header">
+                <i class="bi bi-person-badge"></i>
+                <h5 class="mb-0">Basic Information</h5>
+            </div>
+            <div class="form-section-body">
+                <div class="section-description">
+                    Provide your personal and contact information to help patients identify you.
+                </div>
+                <div class="row">
+                    <div class="col-md-3 text-center mb-4 mb-md-0">
+                        <div class="profile-image-container">
+                            <div class="profile-image-placeholder" id="imagePreview">
+                                <i class="bi bi-person"></i>
+                            </div>
+                            <label for="profileImage" class="image-upload-btn">
+                                <i class="bi bi-camera"></i>
+                            </label>
+                            <input type="file" id="profileImage" name="ProfileImage" class="d-none" accept="image/*" />
+                        </div>
+                        <small class="text-muted">Upload a professional photo</small>
+                    </div>
+                    <div class="col-md-9">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Name" class="form-label required-field">Full Name</label>
+                                <input asp-for="Name" class="form-control" required data-field-group="basic" />
+                                <span asp-validation-for="Name" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Email" class="form-label required-field">Email</label>
+                                <input asp-for="Email" class="form-control" type="email" required data-field-group="basic" />
+                                <span asp-validation-for="Email" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="PhoneNumber" class="form-label required-field">Phone Number</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-telephone"></i></span>
+                                    <input asp-for="PhoneNumber" class="form-control" required data-field-group="basic" />
+                                </div>
+                                <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="HospitalId" class="form-label required-field">Hospital/Clinic</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-hospital"></i></span>
+                                    <select asp-for="HospitalId" class="form-select" asp-items="ViewBag.Hospitals" required data-field-group="basic">
+                                        <option value="">Select Hospital/Clinic</option>
+                                    </select>
+                                </div>
+                                <span asp-validation-for="HospitalId" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Professional Information -->
+        <div class="form-section" id="section2">
+            <div class="form-section-header">
+                <i class="bi bi-clipboard2-pulse"></i>
+                <h5 class="mb-0">Professional Information</h5>
+            </div>
+            <div class="form-section-body">
+                <div class="section-description">
+                    Share your medical expertise and qualifications to help patients find the right care.
+                </div>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="Specialization" class="form-label required-field">Primary Specialization</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-star-fill"></i></span>
+                            <select asp-for="Specialization" class="form-select" required data-field-group="professional">
+                                <option value="">Select Specialization</option>
+                                <option value="Cardiology">Cardiology</option>
+                                <option value="Dermatology">Dermatology</option>
+                                <option value="Endocrinology">Endocrinology</option>
+                                <option value="Gastroenterology">Gastroenterology</option>
+                                <option value="General Medicine">General Medicine</option>
+                                <option value="Neurology">Neurology</option>
+                                <option value="Obstetrics & Gynecology">Obstetrics & Gynecology</option>
+                                <option value="Oncology">Oncology</option>
+                                <option value="Ophthalmology">Ophthalmology</option>
+                                <option value="Orthopedics">Orthopedics</option>
+                                <option value="Pediatrics">Pediatrics</option>
+                                <option value="Psychiatry">Psychiatry</option>
+                                <option value="Pulmonology">Pulmonology</option>
+                                <option value="Radiology">Radiology</option>
+                                <option value="Urology">Urology</option>
+                            </select>
+                        </div>
+                        <span asp-validation-for="Specialization" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="ConsultationFee" class="form-label required-field">Consultation Fee</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-currency-dollar"></i></span>
+                            <input asp-for="ConsultationFee" class="form-control" type="number" min="0" step="0.01" required data-field-group="professional" />
+                        </div>
+                        <span asp-validation-for="ConsultationFee" class="text-danger"></span>
+                    </div>
+                    <div class="col-12 mb-3">
+                        <label class="form-label">Additional Specialties <i class="bi bi-info-circle tooltip-icon" data-bs-toggle="tooltip" title="Add any additional areas of expertise"></i></label>
+                        <div class="input-group mb-2">
+                            <span class="input-group-text"><i class="bi bi-plus-circle"></i></span>
+                            <input type="text" id="specialtyInput" class="form-control" placeholder="Type a specialty and press Enter or Add">
+                            <button type="button" id="addSpecialtyBtn" class="btn btn-primary">
+                                Add
+                            </button>
+                        </div>
+                        <div id="specialtiesContainer" class="specialties-container">
+                            <div class="empty-specialties">No additional specialties added</div>
+                        </div>
+                        <input type="hidden" id="specialtiesJson" name="AdditionalSpecialties" />
+                    </div>
+                    <div class="col-12 mb-3">
+                        <label asp-for="Bio" class="form-label required-field">Professional Bio <i class="bi bi-info-circle tooltip-icon" data-bs-toggle="tooltip" title="Describe your experience, approach to patient care, and any notable achievements"></i></label>
+                        <textarea asp-for="Bio" class="form-control" rows="4" placeholder="Tell patients about your experience and approach to care" required data-field-group="professional"></textarea>
+                        <span asp-validation-for="Bio" class="text-danger"></span>
+                    </div>
+                    <!-- Add this in the Professional Information section -->
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="LanguagesSpoken" class="form-label">Languages Spoken</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-translate"></i></span>
+                            <input asp-for="LanguagesSpoken" class="form-control" placeholder="e.g., English, Spanish, French" data-field-group="professional" />
+                        </div>
+                        <span asp-validation-for="LanguagesSpoken" class="text-danger"></span>
+                    </div>
+                    <!-- Add this in the Professional Information section -->
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="Qualifications" class="form-label">Qualifications</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-award"></i></span>
+                            <input asp-for="Qualifications" class="form-control" placeholder="e.g., MD, MBBS, PhD" data-field-group="professional" />
+                        </div>
+                        <span asp-validation-for="Qualifications" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Availability Settings -->
+        <div class="form-section" id="section3">
+            <div class="form-section-header">
+                <i class="bi bi-calendar-check"></i>
+                <h5 class="mb-0">Availability Settings</h5>
+            </div>
+            <div class="form-section-body">
+                <div class="section-description">
+                    Set your working hours and appointment preferences to manage your schedule effectively.
+                </div>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="StartTime" class="form-label required-field">Working Hours Start</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-clock"></i></span>
+                            <input asp-for="StartTime" class="form-control" type="time" required data-field-group="availability" />
+                        </div>
+                        <span asp-validation-for="StartTime" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="EndTime" class="form-label required-field">Working Hours End</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-clock-fill"></i></span>
+                            <input asp-for="EndTime" class="form-control" type="time" required data-field-group="availability" />
+                        </div>
+                        <span asp-validation-for="EndTime" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="SlotDurationMinutes" class="form-label required-field">Appointment Duration</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-hourglass-split"></i></span>
+                            <select asp-for="SlotDurationMinutes" class="form-select" required data-field-group="availability">
+                                <option value="15">15 minutes</option>
+                                <option value="30" selected>30 minutes</option>
+                                <option value="45">45 minutes</option>
+                                <option value="60">60 minutes</option>
+                            </select>
+                        </div>
+                        <span asp-validation-for="SlotDurationMinutes" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="SlotsPerDay" class="form-label required-field">Maximum Appointments Per Day</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-calendar-event"></i></span>
+                            <input asp-for="SlotsPerDay" class="form-control" type="number" min="1" max="50" required data-field-group="availability" />
+                        </div>
+                        <span asp-validation-for="SlotsPerDay" class="text-danger"></span>
+                    </div>
+                    <div class="col-12 mb-3">
+                        <label class="form-label required-field">Working Days</label>
+                        <div class="working-days-container">
+                            <input type="checkbox" class="day-checkbox" name="WorkingDays" value="Monday" id="monday" checked data-field-group="availability">
+                            <label for="monday" class="day-label">Monday</label>
+
+                            <input type="checkbox" class="day-checkbox" name="WorkingDays" value="Tuesday" id="tuesday" checked data-field-group="availability">
+                            <label for="tuesday" class="day-label">Tuesday</label>
+
+                            <input type="checkbox" class="day-checkbox" name="WorkingDays" value="Wednesday" id="wednesday" checked data-field-group="availability">
+                            <label for="wednesday" class="day-label">Wednesday</label>
+
+                            <input type="checkbox" class="day-checkbox" name="WorkingDays" value="Thursday" id="thursday" checked data-field-group="availability">
+                            <label for="thursday" class="day-label">Thursday</label>
+
+                            <input type="checkbox" class="day-checkbox" name="WorkingDays" value="Friday" id="friday" checked data-field-group="availability">
+                            <label for="friday" class="day-label">Friday</label>
+
+                            <input type="checkbox" class="day-checkbox" name="WorkingDays" value="Saturday" id="saturday" data-field-group="availability">
+                            <label for="saturday" class="day-label">Saturday</label>
+
+                            <input type="checkbox" class="day-checkbox" name="WorkingDays" value="Sunday" id="sunday" data-field-group="availability">
+                            <label for="sunday" class="day-label">Sunday</label>
+                        </div>
+                    </div>
+                    <div class="col-12 mb-3">
+                        <label class="form-label">Break Time <i class="bi bi-info-circle tooltip-icon" data-bs-toggle="tooltip" title="Set a daily break time if needed"></i></label>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="input-group">
+                                    <span class="input-group-text">From</span>
+                                    <input type="time" class="form-control" name="BreakStartTime" data-field-group="availability">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="input-group">
+                                    <span class="input-group-text">To</span>
+                                    <input type="time" class="form-control" name="BreakEndTime" data-field-group="availability">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="d-flex justify-content-between mb-4">
+            <a asp-controller="Home" asp-action="Index" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left me-2"></i> Cancel
+            </a>
+            <div>
+                <button type="button" id="prevBtn" class="btn btn-outline-primary me-2" style="display: none;">
+                    <i class="bi bi-arrow-left me-2"></i> Previous
+                </button>
+                <button type="button" id="nextBtn" class="btn btn-primary">
+                    Next <i class="bi bi-arrow-right ms-2"></i>
+                </button>
+                <button type="submit" id="submitBtn" class="btn btn-success" style="display: none;">
+                    <i class="bi bi-check-circle me-2"></i> Create Profile
+                </button>
+            </div>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Initialize tooltips
+            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+            var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl)
+            });
+
+            // Profile image preview
+            const profileImageInput = document.getElementById('profileImage');
+            const imagePreview = document.getElementById('imagePreview');
+
+            profileImageInput.addEventListener('change', function () {
+                if (this.files && this.files[0]) {
+                    const reader = new FileReader();
+                    reader.onload = function (e) {
+                        imagePreview.innerHTML = `<img src="${e.target.result}" class="profile-image" alt="Profile Image">`;
+                    }
+                    reader.readAsDataURL(this.files[0]);
+                }
+            });
+
+            // Additional specialties
+            const specialtyInput = document.getElementById('specialtyInput');
+            const addSpecialtyBtn = document.getElementById('addSpecialtyBtn');
+            const specialtiesContainer = document.getElementById('specialtiesContainer');
+            const specialtiesJson = document.getElementById('specialtiesJson');
+            let specialties = [];
+
+            addSpecialtyBtn.addEventListener('click', function () {
+                const specialty = specialtyInput.value.trim();
+                if (specialty && !specialties.includes(specialty)) {
+                    specialties.push(specialty);
+                    updateSpecialtiesDisplay();
+                    specialtyInput.value = '';
+                }
+            });
+
+            specialtyInput.addEventListener('keypress', function (e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    addSpecialtyBtn.click();
+                }
+            });
+
+            function updateSpecialtiesDisplay() {
+                specialtiesContainer.innerHTML = '';
+
+                if (specialties.length === 0) {
+                    specialtiesContainer.innerHTML = '<div class="empty-specialties">No additional specialties added</div>';
+                    specialtiesJson.value = JSON.stringify([]);
+                    return;
+                }
+
+                specialties.forEach((specialty, index) => {
+                    const badge = document.createElement('span');
+                    badge.className = 'specialty-badge';
+                    badge.innerHTML = `${specialty} <i class="bi bi-x-circle" data-index="${index}"></i>`;
+                    specialtiesContainer.appendChild(badge);
+                });
+                specialtiesJson.value = JSON.stringify(specialties);
+
+                // Add event listeners to remove buttons
+                document.querySelectorAll('.specialty-badge i').forEach(icon => {
+                    icon.addEventListener('click', function () {
+                        const index = parseInt(this.getAttribute('data-index'));
+                        specialties.splice(index, 1);
+                        updateSpecialtiesDisplay();
+                    });
+                });
+            }
+
+            // Multi-step form
+            const sections = document.querySelectorAll('.form-section');
+            const progressBar = document.getElementById('profileProgress');
+            const progressSteps = document.querySelectorAll('.progress-step');
+            const nextBtn = document.getElementById('nextBtn');
+            const prevBtn = document.getElementById('prevBtn');
+            const submitBtn = document.getElementById('submitBtn');
+
+            let currentSection = 0;
+
+            function showSection(index) {
+                sections.forEach((section, i) => {
+                    section.style.display = i === index ? 'block' : 'none';
+                });
+
+                progressSteps.forEach((step, i) => {
+                    step.classList.toggle('active', i <= index);
+                });
+
+                progressBar.style.width = `${(index / (sections.length - 1)) * 100}%`;
+
+                prevBtn.style.display = index > 0 ? 'inline-block' : 'none';
+
+                if (index === sections.length - 1) {
+                    nextBtn.style.display = 'none';
+                    submitBtn.style.display = 'inline-block';
+                } else {
+                    nextBtn.style.display = 'inline-block';
+                    submitBtn.style.display = 'none';
+                }
+
+                // Update current section
+                currentSection = index;
+            }
+
+            // Initialize first section
+            showSection(0);
+
+            nextBtn.addEventListener('click', function() {
+                // Validate current section
+                const currentFields = document.querySelectorAll(`[data-field-group="${getFieldGroupForSection(currentSection)}"][required]`);
+                let isValid = true;
+
+                currentFields.forEach(field => {
+                    if (!field.value) {
+                        isValid = false;
+                        field.classList.add('is-invalid');
+                    } else {
+                        field.classList.remove('is-invalid');
+                    }
+                });
+
+                if (isValid && currentSection < sections.length - 1) {
+                    showSection(currentSection + 1);
+                    window.scrollTo(0, 0);
+                }
+            });
+
+            prevBtn.addEventListener('click', function() {
+                if (currentSection > 0) {
+                    showSection(currentSection - 1);
+                    window.scrollTo(0, 0);
+                }
+            });
+
+            function getFieldGroupForSection(sectionIndex) {
+                switch(sectionIndex) {
+                    case 0: return 'basic';
+                    case 1: return 'professional';
+                    case 2: return 'availability';
+                    default: return '';
+                }
+            }
+
+            // Form validation
+            const form = document.getElementById('doctorProfileForm');
+            form.addEventListener('submit', function (e) {
+                if (!form.checkValidity()) {
+                    e.preventDefault();
+                    e.stopPropagation();
+
+                    // Find the first section with invalid fields
+                    for (let i = 0; i < sections.length; i++) {
+                        const fieldGroup = getFieldGroupForSection(i);
+                        const invalidFields = document.querySelectorAll(`[data-field-group="${fieldGroup}"][required]:invalid`);
+
+                        if (invalidFields.length > 0) {
+                            showSection(i);
+                            invalidFields[0].focus();
+                            break;
+                        }
+                    }
+                }
+                form.classList.add('was-validated');
+            });
+
+            // Time validation
+            const startTime = document.querySelector('[name="StartTime"]');
+            const endTime = document.querySelector('[name="EndTime"]');
+            const breakStartTime = document.querySelector('[name="BreakStartTime"]');
+            const breakEndTime = document.querySelector('[name="BreakEndTime"]');
+
+            endTime.addEventListener('change', function() {
+                if (startTime.value && endTime.value && startTime.value >= endTime.value) {
+                    endTime.setCustomValidity('End time must be after start time');
+                } else {
+                    endTime.setCustomValidity('');
+                }
+            });
+
+            breakEndTime.addEventListener('change', function() {
+                if (breakStartTime.value && breakEndTime.value) {
+                    if (breakStartTime.value >= breakEndTime.value) {
+                        breakEndTime.setCustomValidity('Break end time must be after break start time');
+                    } else if (startTime.value && breakStartTime.value < startTime.value) {
+                        breakStartTime.setCustomValidity('Break start time must be after working hours start');
+                    } else if (endTime.value && breakEndTime.value > endTime.value) {
+                        breakEndTime.setCustomValidity('Break end time must be before working hours end');
+                    } else {
+                        breakStartTime.setCustomValidity('');
+                        breakEndTime.setCustomValidity('');
+                    }
+                }
+            });
+
+            // Working days validation
+            const workingDaysCheckboxes = document.querySelectorAll('input[name="WorkingDays"]');
+            workingDaysCheckboxes.forEach(checkbox => {
+                checkbox.addEventListener('change', function() {
+                    const checkedDays = document.querySelectorAll('input[name="WorkingDays"]:checked');
+                    if (checkedDays.length === 0) {
+                        workingDaysCheckboxes[0].setCustomValidity('Please select at least one working day');
+                    } else {
+                        workingDaysCheckboxes[0].setCustomValidity('');
+                    }
+                });
+            });
+        });
+    </script>
+}

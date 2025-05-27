@@ -24,6 +24,9 @@ namespace AppointPro.Models
 
         public string? GoogleId { get; set; }
 
+        // Add PasswordHash property
+        public string? PasswordHash { get; set; }
+
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
         [Required]

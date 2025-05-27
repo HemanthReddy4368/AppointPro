@@ -1,0 +1,636 @@
+﻿@model AppointPro.Models.Doctor
+
+@{
+    ViewData["Title"] = "Create Doctor Profile";
+    Layout = "_DashboardLayout";
+}
+
+<style>
+    /* Custom styles for doctor profile form */
+    .profile-container {
+        padding: 1.5rem;
+        background-color: #f8f9fa;
+    }
+    
+    .profile-card {
+        border-radius: 16px;
+        border: none;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+        overflow: hidden;
+    }
+    
+    .profile-header {
+        background: linear-gradient(135deg, #4361ee 0%, #3a0ca3 100%);
+        padding: 2rem;
+        position: relative;
+    }
+    
+    .profile-header::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        right: -50%;
+        width: 100%;
+        height: 200%;
+        background: rgba(255, 255, 255, 0.1);
+        transform: rotate(30deg);
+    }
+    
+    .form-section {
+        border-radius: 12px;
+        background-color: #fff;
+        margin-bottom: 1.5rem;
+        padding: 1.5rem;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        transition: all 0.3s ease;
+    }
+    
+    .form-section:hover {
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+    }
+    
+    .section-icon {
+        width: 50px;
+        height: 50px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 12px;
+        font-size: 1.5rem;
+        margin-right: 1rem;
+    }
+    
+    .form-control, .form-select {
+        border-radius: 10px;
+        padding: 0.75rem 1rem;
+        border: 1px solid #e0e0e0;
+        transition: all 0.2s ease;
+    }
+    
+    .form-control:focus, .form-select:focus {
+        box-shadow: 0 0 0 0.25rem rgba(67, 97, 238, 0.15);
+        border-color: #4361ee;
+    }
+    
+    .form-label {
+        font-weight: 500;
+        margin-bottom: 0.5rem;
+        color: #495057;
+    }
+    
+    .form-text {
+        color: #6c757d;
+    }
+    
+    .btn-action {
+        border-radius: 10px;
+        padding: 0.75rem 1.5rem;
+        font-weight: 500;
+        transition: all 0.2s ease;
+    }
+    
+    .btn-action:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+    
+    .profile-image-container {
+        width: 150px;
+        height: 150px;
+        border-radius: 16px;
+        overflow: hidden;
+        margin: 0 auto 1.5rem;
+        position: relative;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        background-color: #e9ecef;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .profile-image-container img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+    
+    .profile-image-overlay {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: rgba(0, 0, 0, 0.5);
+        color: white;
+        padding: 0.5rem;
+        font-size: 0.8rem;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+    
+    .profile-image-overlay:hover {
+        background: rgba(0, 0, 0, 0.7);
+    }
+    
+    .custom-file-input {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        opacity: 0;
+        cursor: pointer;
+    }
+    
+    .step-progress {
+        display: flex;
+        margin-bottom: 2rem;
+        justify-content: space-between;
+        position: relative;
+    }
+    
+    .step-progress::before {
+        content: '';
+        position: absolute;
+        top: 24px;
+        left: 0;
+        right: 0;
+        height: 2px;
+        background: #e9ecef;
+        z-index: 1;
+    }
+    
+    .step {
+        position: relative;
+        z-index: 2;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        flex: 1;
+    }
+    
+    .step-icon {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background: #fff;
+        border: 2px solid #e9ecef;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.25rem;
+        color: #6c757d;
+        margin-bottom: 0.5rem;
+        transition: all 0.3s ease;
+    }
+    
+    .step.active .step-icon {
+        background: #4361ee;
+        border-color: #4361ee;
+        color: #fff;
+        box-shadow: 0 0 0 5px rgba(67, 97, 238, 0.2);
+    }
+    
+    .step.completed .step-icon {
+        background: #2ec4b6;
+        border-color: #2ec4b6;
+        color: #fff;
+    }
+    
+    .step-label {
+        font-weight: 500;
+        color: #6c757d;
+        transition: all 0.3s ease;
+    }
+    
+    .step.active .step-label {
+        color: #4361ee;
+        font-weight: 600;
+    }
+    
+    .step.completed .step-label {
+        color: #2ec4b6;
+    }
+    
+    .time-slot {
+        display: inline-block;
+        padding: 0.5rem 1rem;
+        margin: 0.25rem;
+        border-radius: 8px;
+        border: 1px solid #e0e0e0;
+        background: #f8f9fa;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+    
+    .time-slot:hover {
+        background: #e9ecef;
+    }
+    
+    .time-slot.selected {
+        background: #4361ee;
+        color: white;
+        border-color: #4361ee;
+    }
+    
+    .day-selector {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+    }
+    
+    .day-checkbox {
+        display: none;
+    }
+    
+    .day-label {
+        display: inline-block;
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        border: 1px solid #e0e0e0;
+        background: #f8f9fa;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        margin: 0;
+        text-align: center;
+        min-width: 100px;
+    }
+    
+    .day-label:hover {
+        background: #e9ecef;
+    }
+    
+    .day-checkbox:checked + .day-label {
+        background: #4361ee;
+        color: white;
+        border-color: #4361ee;
+    }
+    
+    .fade-in-up {
+        animation: fadeInUp 0.5s ease forwards;
+        opacity: 0;
+    }
+    
+    @@keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .delay-1 { animation-delay: 0.1s; }
+    .delay-2 { animation-delay: 0.2s; }
+    .delay-3 { animation-delay: 0.3s; }
+</style>
+
+<div class="profile-container">
+    <div class="profile-card mb-4 fade-in-up">
+        <div class="profile-header">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h2 class="text-white mb-1 fw-bold">Create Your Doctor Profile</h2>
+                    <p class="text-white opacity-8 mb-0">
+                        Complete your profile to start accepting appointments
+                    </p>
+                </div>
+                <div class="col-md-4 text-md-end mt-3 mt-md-0">
+                    <a asp-controller="Doctor" asp-action="Dashboard" class="btn btn-light px-4 rounded-pill shadow-sm">
+                        <i class="bi bi-arrow-left me-2"></i>Back to Dashboard
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="step-progress fade-in-up">
+        <div class="step active" id="step1">
+            <div class="step-icon">
+                <i class="bi bi-person"></i>
+            </div>
+            <div class="step-label">Basic Info</div>
+        </div>
+        <div class="step" id="step2">
+            <div class="step-icon">
+                <i class="bi bi-briefcase-medical"></i>
+            </div>
+            <div class="step-label">Professional</div>
+        </div>
+        <div class="step" id="step3">
+            <div class="step-icon">
+                <i class="bi bi-calendar-check"></i>
+            </div>
+            <div class="step-label">Availability</div>
+        </div>
+    </div>
+
+    <form asp-action="CreateProfile" method="post" enctype="multipart/form-data">
+        <div asp-validation-summary="ModelOnly" class="alert alert-danger rounded-3" role="alert"></div>
+        
+        <!-- Step 1: Basic Information -->
+        <div id="step1Content" class="fade-in-up delay-1">
+            <div class="form-section">
+                <div class="d-flex align-items-center mb-4">
+                    <div class="section-icon bg-primary-subtle text-primary">
+                        <i class="bi bi-person-badge"></i>
+                    </div>
+                    <div>
+                        <h4 class="mb-1">Personal Information</h4>
+                        <p class="text-muted mb-0">Your basic contact and personal details</p>
+                    </div>
+                </div>
+                
+                <div class="row mb-4">
+                    <div class="col-md-4 text-center">
+                        <div class="profile-image-container">
+                            <img id="profilePreview" src="~/images/default-profile.png" alt="Profile Preview">
+                            <div class="profile-image-overlay">
+                                <i class="bi bi-camera me-1"></i> Upload Photo
+                                <input type="file" name="ProfileImage" id="profileImage" class="custom-file-input" accept="image/*">
+                            </div>
+                        </div>
+                        <div class="form-text">Upload a professional photo</div>
+                    </div>
+                    
+                    <div class="col-md-8">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label asp-for="Name" class="form-label">Full Name</label>
+                                <input asp-for="Name" class="form-control" placeholder="Dr. John Smith">
+                                <span asp-validation-for="Name" class="text-danger"></span>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <label asp-for="Email" class="form-label">Email Address</label>
+                                <input asp-for="Email" class="form-control" placeholder="doctor@example.com">
+                                <span asp-validation-for="Email" class="text-danger"></span>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <label asp-for="PhoneNumber" class="form-label">Phone Number</label>
+                                <input asp-for="PhoneNumber" class="form-control" placeholder="+1 (555) 123-4567">
+                                <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row g-3">
+                    
+                    <div class="col-md-6">
+                        <label asp-for="HospitalId" class="form-label">Primary Hospital</label>
+                        <select asp-for="HospitalId" asp-items="ViewBag.Hospitals" class="form-select">
+                            <option value="">Select Hospital</option>
+                        </select>
+                        <span asp-validation-for="HospitalId" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="d-flex justify-content-end">
+                <button type="button" class="btn btn-primary btn-action px-4" onclick="nextStep(1)">
+                    Next: Professional Info <i class="bi bi-arrow-right ms-2"></i>
+                </button>
+            </div>
+        </div>
+        
+        <!-- Step 2: Professional Information -->
+        <div id="step2Content" class="d-none fade-in-up delay-2">
+            <div class="form-section">
+                <div class="d-flex align-items-center mb-4">
+                    <div class="section-icon bg-success-subtle text-success">
+                        <i class="bi bi-briefcase-medical"></i>
+                    </div>
+                    <div>
+                        <h4 class="mb-1">Professional Information</h4>
+                        <p class="text-muted mb-0">Your specialization and professional details</p>
+                    </div>
+                </div>
+                
+                <div class="row g-3 mb-4">
+                    <div class="col-md-6">
+                        <label asp-for="Specialization" class="form-label">Specialization</label>
+                        <select asp-for="Specialization" class="form-select">
+                            <option value="">Select Specialization</option>
+                            <option value="Cardiology">Cardiology</option>
+                            <option value="Dermatology">Dermatology</option>
+                            <option value="Endocrinology">Endocrinology</option>
+                            <option value="Gastroenterology">Gastroenterology</option>
+                            <option value="Neurology">Neurology</option>
+                            <option value="Obstetrics and Gynecology">Obstetrics and Gynecology</option>
+                            <option value="Oncology">Oncology</option>
+                            <option value="Ophthalmology">Ophthalmology</option>
+                            <option value="Orthopedics">Orthopedics</option>
+                            <option value="Pediatrics">Pediatrics</option>
+                            <option value="Psychiatry">Psychiatry</option>
+                            <option value="Pulmonology">Pulmonology</option>
+                            <option value="Radiology">Radiology</option>
+                            <option value="Urology">Urology</option>
+                            <option value="Other">Other</option>
+                        </select>
+                        <span asp-validation-for="Specialization" class="text-danger"></span>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <label asp-for="ConsultationFee" class="form-label">Consultation Fee ($)</label>
+                        <input asp-for="ConsultationFee" type="number" class="form-control" min="0" step="0.01">
+                        <span asp-validation-for="ConsultationFee" class="text-danger"></span>
+                    </div>
+                    
+                    <div class="col-12">
+                        <label asp-for="Bio" class="form-label">Professional Bio</label>
+                        <textarea asp-for="Bio" class="form-control" rows="4" placeholder="Write a brief professional summary..."></textarea>
+                        <span asp-validation-for="Bio" class="text-danger"></span>
+                        <div class="form-text">Highlight your expertise, approach to patient care, and any special interests.</div>
+                    </div>
+                </div>
+                
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label asp-for="Qualifications" class="form-label">Qualifications</label>
+                        <input asp-for="Qualifications" class="form-control" placeholder="MD, PhD, MBBS, etc.">
+                        <span asp-validation-for="Qualifications" class="text-danger"></span>
+                        <div class="form-text">Separate multiple qualifications with commas</div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <label asp-for="LanguagesSpoken" class="form-label">Languages Spoken</label>
+                        <input asp-for="LanguagesSpoken" class="form-control" placeholder="English, Spanish, etc.">
+                        <span asp-validation-for="LanguagesSpoken" class="text-danger"></span>
+                        <div class="form-text">Separate multiple languages with commas</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="d-flex justify-content-between">
+                <button type="button" class="btn btn-outline-secondary btn-action px-4" onclick="prevStep(2)">
+                    <i class="bi bi-arrow-left me-2"></i> Previous
+                </button>
+                <button type="button" class="btn btn-primary btn-action px-4" onclick="nextStep(2)">
+                    Next: Availability <i class="bi bi-arrow-right ms-2"></i>
+                </button>
+            </div>
+        </div>
+        
+        <!-- Step 3: Availability -->
+        <div id="step3Content" class="d-none fade-in-up delay-3">
+            <div class="form-section">
+                <div class="d-flex align-items-center mb-4">
+                    <div class="section-icon bg-info-subtle text-info">
+                        <i class="bi bi-calendar-check"></i>
+                    </div>
+                    <div>
+                        <h4 class="mb-1">Availability Settings</h4>
+                        <p class="text-muted mb-0">Set your working days and hours</p>
+                    </div>
+                </div>
+                
+                <div class="mb-4">
+                    <label class="form-label fw-medium">Working Days</label>
+                    <div class="day-selector">
+                        <div>
+                            <input type="checkbox" id="monday" name="WorkingDays" value="Monday" class="day-checkbox">
+                            <label for="monday" class="day-label">Monday</label>
+                        </div>
+                        <div>
+                            <input type="checkbox" id="tuesday" name="WorkingDays" value="Tuesday" class="day-checkbox">
+                            <label for="tuesday" class="day-label">Tuesday</label>
+                        </div>
+                        <div>
+                            <input type="checkbox" id="wednesday" name="WorkingDays" value="Wednesday" class="day-checkbox">
+                            <label for="wednesday" class="day-label">Wednesday</label>
+                        </div>
+                        <div>
+                            <input type="checkbox" id="thursday" name="WorkingDays" value="Thursday" class="day-checkbox">
+                            <label for="thursday" class="day-label">Thursday</label>
+                        </div>
+                        <div>
+                            <input type="checkbox" id="friday" name="WorkingDays" value="Friday" class="day-checkbox">
+                            <label for="friday" class="day-label">Friday</label>
+                        </div>
+                        <div>
+                            <input type="checkbox" id="saturday" name="WorkingDays" value="Saturday" class="day-checkbox">
+                            <label for="saturday" class="day-label">Saturday</label>
+                        </div>
+                        <div>
+                            <input type="checkbox" id="sunday" name="WorkingDays" value="Sunday" class="day-checkbox">
+                            <label for="sunday" class="day-label">Sunday</label>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row g-3 mb-4">
+                    <div class="col-md-6">
+                        <label asp-for="StartTime" class="form-label">Start Time</label>
+                        <input asp-for="StartTime" type="time" class="form-control">
+                        <span asp-validation-for="StartTime" class="text-danger"></span>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <label asp-for="EndTime" class="form-label">End Time</label>
+                        <input asp-for="EndTime" type="time" class="form-control">
+                        <span asp-validation-for="EndTime" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="d-flex justify-content-between">
+                <button type="button" class="btn btn-outline-secondary btn-action px-4" onclick="prevStep(3)">
+                    <i class="bi bi-arrow-left me-2"></i> Previous
+                </button>
+                <button type="submit" class="btn btn-success btn-action px-4">
+                    <i class="bi bi-check-circle me-2"></i> Create Profile
+                </button>
+            </div>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    
+    <script>
+        // Handle profile image preview
+        document.getElementById('profileImage').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    document.getElementById('profilePreview').src = event.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+        
+        // Multi-step form navigation
+        function nextStep(currentStep) {
+            // Validate current step fields
+            if (validateStep(currentStep)) {
+                document.getElementById(`step${currentStep}Content`).classList.add('d-none');
+                document.getElementById(`step${currentStep + 1}Content`).classList.remove('d-none');
+                
+                // Update progress indicators
+                document.getElementById(`step${currentStep}`).classList.remove('active');
+                document.getElementById(`step${currentStep}`).classList.add('completed');
+                document.getElementById(`step${currentStep + 1}`).classList.add('active');
+                
+                // Scroll to top
+                window.scrollTo(0, 0);
+            }
+        }
+        
+        function prevStep(currentStep) {
+            document.getElementById(`step${currentStep}Content`).classList.add('d-none');
+            document.getElementById(`step${currentStep - 1}Content`).classList.remove('d-none');
+            
+            // Update progress indicators
+            document.getElementById(`step${currentStep}`).classList.remove('active');
+            document.getElementById(`step${currentStep - 1}`).classList.remove('completed');
+            document.getElementById(`step${currentStep - 1}`).classList.add('active');
+            
+            // Scroll to top
+            window.scrollTo(0, 0);
+        }
+        
+        function validateStep(step) {
+            let isValid = true;
+            
+            // Basic validation for required fields
+            if (step === 1) {
+                const name = document.getElementById('Name').value;
+                const email = document.getElementById('Email').value;
+                const phone = document.getElementById('PhoneNumber').value;
+                
+                if (!name || !email || !phone) {
+                    alert('Please fill in all required fields: Name, Email, and Phone Number');
+                    isValid = false;
+                }
+            } else if (step === 2) {
+                const specialization = document.getElementById('Specialization').value;
+                const experience = document.getElementById('YearsOfExperience').value;
+                const license = document.getElementById('LicenseNumber').value;
+                
+                if (!specialization || !experience || !license) {
+                    alert('Please fill in all required fields: Specialization, Years of Experience, and License Number');
+                    isValid = false;
+                }
+            }
+            
+            return isValid;
+        }
+        
+        // Initialize time slot selection
+        document.addEventListener('DOMContentLoaded', function() {
+            const timeSlots = document.querySelectorAll('.time-slot');
+            timeSlots.forEach(slot => {
+                slot.addEventListener('click', function() {
+                    this.classList.toggle('selected');
+                });
+            });
+        });
+    </script>
+}
