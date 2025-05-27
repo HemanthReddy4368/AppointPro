@@ -1,0 +1,750 @@
+﻿@model IEnumerable<AppointPro.Models.Appointment>
+@using System.Security.Claims
+
+@{
+    ViewData["Title"] = "Doctor Dashboard";
+    Layout = "_DashboardLayout";
+
+    // Get current doctor ID from claims
+    var doctorId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
+    var doctorName = User.Identity.Name;
+
+    // Filter appointments for today
+    var todaysAppointments = Model.Where(a => a.AppointmentDate.Date == DateTime.Today && a.Status != AppointmentStatus.Cancelled).ToList();
+
+    // Filter pending appointments (scheduled but not completed)
+    var pendingAppointments = Model.Where(a => a.Status == AppointmentStatus.Scheduled).ToList();
+
+    // Get total unique patients
+    var totalPatients = Model.Select(a => a.PatientId).Distinct().Count();
+
+    // Group appointments by date for weekly view
+    var startOfWeek = DateTime.Today.AddDays(-(int)DateTime.Today.DayOfWeek + (int)DayOfWeek.Monday);
+    var endOfWeek = startOfWeek.AddDays(6);
+    var weeklyAppointments = Model
+        .Where(a => a.AppointmentDate >= startOfWeek && a.AppointmentDate <= endOfWeek && a.Status != AppointmentStatus.Cancelled)
+        .GroupBy(a => a.AppointmentDate.Date)
+        .ToDictionary(g => g.Key, g => g.ToList());
+
+    // Calculate completion rate
+    var completionRate = Model.Any() ?
+        Math.Round((double)Model.Count(a => a.Status == AppointmentStatus.Completed) / Model.Count() * 100) :
+        0;
+}
+
+<style>
+    /* Custom styles for modern look */
+    .dashboard-container {
+        padding: 1.5rem;
+        background-color: #f8f9fa;
+    }
+    
+    .welcome-card {
+        border-radius: 16px;
+        overflow: hidden;
+        transition: all 0.3s ease;
+        border: none;
+    }
+    
+    .welcome-header {
+        background: linear-gradient(135deg, #4361ee 0%, #3a0ca3 100%);
+        padding: 2rem;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .welcome-header::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        right: -50%;
+        width: 100%;
+        height: 200%;
+        background: rgba(255, 255, 255, 0.1);
+        transform: rotate(30deg);
+    }
+    
+    .welcome-info {
+        background-color: #fff;
+        border-radius: 12px;
+        margin-top: -20px;
+        margin-left: 20px;
+        margin-right: 20px;
+        padding: 15px 20px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+        position: relative;
+        z-index: 10;
+    }
+    
+    .stat-card {
+        border-radius: 16px;
+        border: none;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+        transition: all 0.3s ease;
+        height: 100%;
+        overflow: hidden;
+    }
+    
+    .stat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    }
+    
+    .stat-icon {
+        width: 60px;
+        height: 60px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 12px;
+        font-size: 1.5rem;
+    }
+    
+    .schedule-card {
+        border-radius: 16px;
+        border: none;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+        overflow: hidden;
+    }
+    
+    .card-header {
+        background-color: #fff;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        padding: 1.25rem 1.5rem;
+    }
+    
+    .appointment-item {
+        border-left: 4px solid transparent;
+        transition: all 0.2s ease;
+    }
+    
+    .appointment-item:hover {
+        background-color: #f8f9fa;
+    }
+    
+    .appointment-item.scheduled {
+        border-left-color: #4361ee;
+    }
+    
+    .appointment-item.completed {
+        border-left-color: #2ec4b6;
+    }
+    
+    .appointment-item.cancelled {
+        border-left-color: #e63946;
+    }
+    
+    .appointment-item.no-show {
+        border-left-color: #ff9f1c;
+    }
+    
+    .calendar-day {
+        min-height: 120px;
+        transition: all 0.2s ease;
+    }
+    
+    .calendar-day:hover {
+        background-color: #f8f9fa;
+    }
+    
+    .calendar-day.today {
+        background-color: rgba(67, 97, 238, 0.05);
+    }
+    
+    .calendar-event {
+        padding: 8px 10px;
+        border-radius: 8px;
+        margin-bottom: 8px;
+        font-size: 0.8rem;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        transition: all 0.2s ease;
+    }
+    
+    .calendar-event:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+    
+    .btn-action {
+        border-radius: 8px;
+        padding: 0.5rem 1rem;
+        font-weight: 500;
+        transition: all 0.2s ease;
+    }
+    
+    .btn-action:hover {
+        transform: translateY(-2px);
+    }
+    
+    .badge-custom {
+        padding: 0.5em 0.8em;
+        border-radius: 6px;
+        font-weight: 500;
+    }
+    
+    .avatar {
+        width: 45px;
+        height: 45px;
+        border-radius: 12px;
+        object-fit: cover;
+    }
+    
+    .avatar-placeholder {
+        width: 45px;
+        height: 45px;
+        border-radius: 12px;
+        background-color: #e9ecef;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #6c757d;
+    }
+    
+    .modal-content {
+        border-radius: 16px;
+        border: none;
+        overflow: hidden;
+    }
+    
+    /* Animation classes */
+    .fade-in-up {
+        animation: fadeInUp 0.5s ease forwards;
+        opacity: 0;
+    }
+    
+    @@keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    /* Delay classes for staggered animations */
+    .delay-1 { animation-delay: 0.1s; }
+    .delay-2 { animation-delay: 0.2s; }
+    .delay-3 { animation-delay: 0.3s; }
+    .delay-4 { animation-delay: 0.4s; }
+    .delay-5 { animation-delay: 0.5s; }
+</style>
+
+<div class="dashboard-container">
+    <!-- Welcome Card -->
+    <div class="welcome-card shadow-sm mb-4 fade-in-up">
+        <div class="welcome-header">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h2 class="text-white mb-1 fw-bold">Welcome back, Dr. @doctorName</h2>
+                    <p class="text-white opacity-8 mb-0">
+                        @DateTime.Now.ToString("dddd, MMMM d, yyyy")
+                    </p>
+                </div>
+                <div class="col-md-4 text-md-end mt-3 mt-md-0">
+                    <a asp-controller="Doctor" asp-action="ManageAvailability" class="btn btn-light px-4 rounded-pill shadow-sm">
+                        <i class="bi bi-calendar-plus me-2"></i>Manage Schedule
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="welcome-info d-flex justify-content-between flex-wrap">
+            <div class="d-flex align-items-center mb-2 mb-md-0">
+                <div class="me-3">
+                    <div class="stat-icon bg-primary-subtle text-primary rounded-circle">
+                        <i class="bi bi-calendar-check"></i>
+                    </div>
+                </div>
+                <div>
+                    <p class="mb-0 text-muted small">Next appointment</p>
+                    @{
+                        var nextAppointment = Model
+                        .Where(a => a.AppointmentDate > DateTime.Now && a.Status == AppointmentStatus.Scheduled)
+                        .OrderBy(a => a.AppointmentDate)
+                        .FirstOrDefault();
+                    }
+                    @if (nextAppointment != null)
+                    {
+                        <p class="mb-0 fw-bold">@nextAppointment.Patient.Name at @nextAppointment.AppointmentDate.ToString("h:mm tt")</p>
+                    }
+                    else
+                    {
+                        <p class="mb-0 fw-bold">No upcoming appointments</p>
+                    }
+                </div>
+            </div>
+            <div class="d-flex align-items-center">
+                <div class="me-3">
+                    <div class="stat-icon bg-success-subtle text-success rounded-circle">
+                        <i class="bi bi-graph-up"></i>
+                    </div>
+                </div>
+                <div>
+                    <p class="mb-0 text-muted small">Completion rate</p>
+                    <div class="d-flex align-items-center">
+                        <div class="progress me-2" style="width: 100px; height: 8px;">
+                            <div class="progress-bar bg-success" role="progressbar" style="width: @completionRate%"></div>
+                        </div>
+                        <p class="mb-0 fw-bold">@completionRate%</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="row mb-4">
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="stat-card bg-white fade-in-up delay-1">
+                <div class="card-body p-4">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="stat-icon bg-primary-subtle text-primary me-3">
+                            <i class="bi bi-calendar-check"></i>
+                        </div>
+                        <h6 class="mb-0 text-uppercase fw-bold text-muted">Today</h6>
+                    </div>
+                    <h2 class="mb-2 fw-bold">@todaysAppointments.Count</h2>
+                    <p class="text-muted mb-3">Appointments scheduled for today</p>
+                    <a asp-controller="Appointment" asp-action="DoctorAppointments" asp-route-date="@DateTime.Today.ToString("yyyy-MM-dd")" class="btn btn-sm btn-primary btn-action w-100">
+                        View Today's Schedule
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="stat-card bg-white fade-in-up delay-2">
+                <div class="card-body p-4">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="stat-icon bg-success-subtle text-success me-3">
+                            <i class="bi bi-people"></i>
+                        </div>
+                        <h6 class="mb-0 text-uppercase fw-bold text-muted">Patients</h6>
+                    </div>
+                    <h2 class="mb-2 fw-bold">@totalPatients</h2>
+                    <p class="text-muted mb-3">Total patients under your care</p>
+                    <a asp-controller="Doctor" asp-action="Patients" class="btn btn-sm btn-success btn-action w-100">
+                        View Patient List
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="stat-card bg-white fade-in-up delay-3">
+                <div class="card-body p-4">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="stat-icon bg-warning-subtle text-warning me-3">
+                            <i class="bi bi-clock-history"></i>
+                        </div>
+                        <h6 class="mb-0 text-uppercase fw-bold text-muted">Pending</h6>
+                    </div>
+                    <h2 class="mb-2 fw-bold">@pendingAppointments.Count</h2>
+                    <p class="text-muted mb-3">Appointments awaiting your attention</p>
+                    <a asp-controller="Appointment" asp-action="DoctorAppointments" asp-route-status="Scheduled" class="btn btn-sm btn-warning btn-action w-100">
+                        View Pending Appointments
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="stat-card bg-white fade-in-up delay-4">
+                <div class="card-body p-4">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="stat-icon bg-info-subtle text-info me-3">
+                            <i class="bi bi-check-circle"></i>
+                        </div>
+                        <h6 class="mb-0 text-uppercase fw-bold text-muted">Completed</h6>
+                    </div>
+                    <h2 class="mb-2 fw-bold">@Model.Count(a => a.Status == AppointmentStatus.Completed)</h2>
+                    <p class="text-muted mb-3">Successfully completed appointments</p>
+                    <a asp-controller="Appointment" asp-action="DoctorAppointments" asp-route-status="Completed" class="btn btn-sm btn-info btn-action w-100">
+                        View Completed Appointments
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Today's Schedule and Upcoming Appointments -->
+    <div class="row mb-4">
+        <div class="col-xl-8 mb-4 mb-xl-0">
+            <div class="schedule-card bg-white h-100 fade-in-up delay-2">
+                <div class="card-header d-flex align-items-center justify-content-between">
+                    <h5 class="mb-0 fw-bold">Today's Schedule</h5>
+                    <div class="dropdown">
+                        <button class="btn btn-sm btn-light rounded-pill dropdown-toggle" type="button" id="scheduleDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi bi-filter me-1"></i>Filter
+                        </button>
+                        <ul class="dropdown-menu shadow-sm" aria-labelledby="scheduleDropdown">
+                            <li><a class="dropdown-item" href="#">All Appointments</a></li>
+                            <li><a class="dropdown-item" href="#">Scheduled Only</a></li>
+                            <li><a class="dropdown-item" href="#">Completed Only</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="#">Sort by Time</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="card-body p-0">
+                    @if (todaysAppointments.Any())
+                    {
+                        <div class="list-group list-group-flush">
+                            @foreach (var appointment in todaysAppointments.OrderBy(a => a.AppointmentDate))
+                            {
+                                string appointmentClass = appointment.Status switch
+                                {
+                                    AppointmentStatus.Scheduled => "scheduled",
+                                    AppointmentStatus.Completed => "completed",
+                                    AppointmentStatus.Cancelled => "cancelled",
+                                    AppointmentStatus.NoShow => "no-show",
+                                    _ => ""
+                                };
+                                
+                                <div class="list-group-item appointment-item p-3 @appointmentClass">
+                                    <div class="row align-items-center">
+                                        <div class="col-md-6 mb-3 mb-md-0">
+                                            <div class="d-flex align-items-center">
+                                                @if (!string.IsNullOrEmpty(appointment.Patient?.ProfilePicture))
+                                                {
+                                                    <img src="@appointment.Patient.ProfilePicture" class="avatar me-3" alt="Patient">
+                                                }
+                                                else
+                                                {
+                                                    <div class="avatar-placeholder me-3">
+                                                        <i class="bi bi-person"></i>
+                                                    </div>
+                                                }
+                                                <div>
+                                                    <h6 class="mb-0 fw-bold">@(appointment.Patient?.Name ?? "Unknown Patient")</h6>
+                                                    <p class="text-muted mb-0 small">
+                                                        @(appointment.Patient?.Gender != null ? appointment.Patient.Gender : "")
+                                                        @(appointment.Patient?.DateOfBirth != null ? $", {CalculateAge(appointment.Patient.DateOfBirth.Value)} yrs" : "")
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-2 mb-3 mb-md-0">
+                                            <div class="d-flex flex-column">
+                                                <span class="fw-bold">@appointment.AppointmentDate.ToString("h:mm tt")</span>
+                                                <span class="text-muted small">@GetAppointmentDuration(appointment) min</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-2 mb-3 mb-md-0">
+                                            @{
+                                                string badgeClass = appointment.Status switch
+                                                {
+                                                    AppointmentStatus.Scheduled => "bg-primary-subtle text-primary",
+                                                    AppointmentStatus.Completed => "bg-success-subtle text-success",
+                                                    AppointmentStatus.Cancelled => "bg-danger-subtle text-danger",
+                                                    AppointmentStatus.NoShow => "bg-warning-subtle text-warning",
+                                                    _ => "bg-secondary-subtle text-secondary"
+                                                };
+                                            }
+                                            <span class="badge badge-custom @badgeClass">@appointment.Status</span>
+                                        </div>
+                                        <div class="col-md-2 text-md-end">
+                                            <div class="dropdown">
+                                                <button class="btn btn-sm btn-light rounded-pill dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                                    Actions
+                                                </button>
+                                                <ul class="dropdown-menu dropdown-menu-end shadow-sm">
+                                                    <li><a class="dropdown-item" href="@Url.Action("Details", "Appointment", new { id = appointment.AppointmentId })"><i class="bi bi-eye me-2"></i>View Details</a></li>
+                                                    <li><a class="dropdown-item" href="@Url.Action("Edit", "Appointment", new { id = appointment.AppointmentId })"><i class="bi bi-pencil me-2"></i>Edit Appointment</a></li>
+                                                    <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#updateStatusModal" data-appointment-id="@appointment.AppointmentId"><i class="bi bi-arrow-repeat me-2"></i>Update Status</a></li>
+                                                    <li><hr class="dropdown-divider"></li>
+                                                    <li><a class="dropdown-item text-danger" href="@Url.Action("Delete", "Appointment", new { id = appointment.AppointmentId })"><i class="bi bi-x-circle me-2"></i>Cancel Appointment</a></li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="text-center py-5">
+                            <div class="mb-3">
+                                <i class="bi bi-calendar-x text-muted" style="font-size: 3rem;"></i>
+                            </div>
+                            <h6 class="fw-bold">Your schedule is clear today</h6>
+                            <p class="text-muted small mb-3">No appointments scheduled for today.</p>
+                            <a asp-controller="Doctor" asp-action="ManageAvailability" class="btn btn-primary rounded-pill px-4">
+                                <i class="bi bi-calendar-plus me-2"></i> Manage Availability
+                            </a>
+                        </div>
+                    }
+                </div>
+                <div class="card-footer bg-white p-3 text-center">
+                    <a asp-controller="Appointment" asp-action="DoctorAppointments" class="btn btn-outline-primary rounded-pill px-4">
+                        View All Appointments <i class="bi bi-arrow-right ms-1"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-4">
+            <div class="schedule-card bg-white h-100 fade-in-up delay-3">
+                <div class="card-header">
+                    <h5 class="mb-0 fw-bold">Upcoming Appointments</h5>
+                </div>
+                <div class="card-body p-0">
+                    @{
+                        var upcomingAppointments = Model
+                        .Where(a => a.AppointmentDate > DateTime.Now && a.AppointmentDate.Date != DateTime.Today && a.Status == AppointmentStatus.Scheduled)
+                        .OrderBy(a => a.AppointmentDate)
+                        .Take(5)
+                        .ToList();
+                    }
+
+                    @if (upcomingAppointments.Any())
+                    {
+                        <div class="list-group list-group-flush">
+                            @foreach (var appointment in upcomingAppointments)
+                            {
+                                <div class="list-group-item p-3 border-start-0 border-end-0">
+                                    <div class="d-flex justify-content-between align-items-start mb-2">
+                                        <div class="d-flex align-items-center">
+                                            @if (!string.IsNullOrEmpty(appointment.Patient?.ProfilePicture))
+                                            {
+                                                <img src="@appointment.Patient.ProfilePicture" class="avatar me-3" alt="Patient" style="width: 40px; height: 40px;">
+                                            }
+                                            else
+                                            {
+                                                <div class="avatar-placeholder me-3" style="width: 40px; height: 40px;">
+                                                    <i class="bi bi-person"></i>
+                                                </div>
+                                            }
+                                            <div>
+                                                <h6 class="mb-0 fw-bold">@(appointment.Patient?.Name ?? "Unknown Patient")</h6>
+                                                <p class="mb-0 small text-muted">@appointment.AppointmentDate.ToString("dddd, MMM d")</p>
+                                            </div>
+                                        </div>
+                                        <span class="badge badge-custom bg-primary-subtle text-primary">@GetTimeUntil(appointment.AppointmentDate)</span>
+                                    </div>
+                                    <div class="d-flex align-items-center mb-2 ps-5">
+                                        <i class="bi bi-clock me-2 text-muted"></i>
+                                        <span class="text-muted small">@appointment.AppointmentDate.ToString("h:mm tt") (@GetAppointmentDuration(appointment) min)</span>
+                                    </div>
+                                    @if (!string.IsNullOrEmpty(appointment.Notes))
+                                    {
+                                        <div class="ps-5 mb-2">
+                                            <div class="p-2 rounded bg-light small">
+                                                @(appointment.Notes.Length > 100 ? appointment.Notes.Substring(0, 100) + "..." : appointment.Notes)
+                                            </div>
+                                        </div>
+                                    }
+                                    <div class="text-end mt-2">
+                                        <a asp-controller="Appointment" asp-action="Details" asp-route-id="@appointment.AppointmentId" class="btn btn-sm btn-outline-primary rounded-pill">
+                                            <i class="bi bi-eye me-1"></i> Details
+                                        </a>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="text-center py-5">
+                            <div class="mb-3">
+                                <i class="bi bi-calendar text-muted" style="font-size: 3rem;"></i>
+                            </div>
+                            <h6 class="fw-bold">No upcoming appointments</h6>
+                            <p class="text-muted small">Your schedule is clear for the upcoming days.</p>
+                        </div>
+                    }
+                </div>
+                <div class="card-footer bg-white p-3 text-center">
+                    <a asp-controller="Appointment" asp-action="DoctorAppointments" class="btn btn-outline-success rounded-pill px-4">
+                        Manage Appointments <i class="bi bi-arrow-right ms-1"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Weekly Calendar -->
+    <div class="row">
+        <div class="col-12">
+            <div class="schedule-card bg-white fade-in-up delay-5">
+                <div class="card-header d-flex align-items-center justify-content-between">
+                    <h5 class="mb-0 fw-bold">Weekly Schedule</h5>
+                    <div class="d-flex align-items-center">
+                        <a asp-controller="Doctor" asp-action="Dashboard" asp-route-weekOffset="-1" class="btn btn-sm btn-light rounded-circle me-2" style="width: 32px; height: 32px; padding: 0; display: flex; align-items: center; justify-content: center;">
+                            <i class="bi bi-chevron-left"></i>
+                        </a>
+                        <span class="badge bg-light text-dark px-3 py-2 border rounded-pill">
+                            @startOfWeek.ToString("MMM d") - @endOfWeek.ToString("MMM d")
+                        </span>
+                        <a asp-controller="Doctor" asp-action="Dashboard" asp-route-weekOffset="1" class="btn btn-sm btn-light rounded-circle ms-2" style="width: 32px; height: 32px; padding: 0; display: flex; align-items: center; justify-content: center;">
+                            <i class="bi bi-chevron-right"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="card-body p-3">
+                    <div class="row g-3">
+                        @for (int i = 0; i < 7; i++)
+                        {
+                            var day = startOfWeek.AddDays(i);
+                            var isToday = day.Date == DateTime.Today;
+                            <div class="col">
+                                <div class="calendar-day p-2 rounded-3 @(isToday ? "today" : "")">
+                                    <div class="text-center mb-2">
+                                        <div class="fw-bold">@day.ToString("ddd")</div>
+                                        <div class="@(isToday ? "badge rounded-pill bg-primary" : "small text-muted")">
+                                            @day.ToString("MMM d")
+                                        </div>
+                                    </div>
+                                    
+                                    <div style="min-height: 120px; max-height: 200px; overflow-y: auto;">
+                                        @if (weeklyAppointments.ContainsKey(day.Date) && weeklyAppointments[day.Date].Any())
+                                        {
+                                            foreach (var appointment in weeklyAppointments[day.Date].OrderBy(a => a.AppointmentDate))
+                                            {
+                                                string bgClass = appointment.Status switch
+                                                {
+                                                    AppointmentStatus.Scheduled => "bg-primary-subtle",
+                                                    AppointmentStatus.Completed => "bg-success-subtle",
+                                                    AppointmentStatus.Cancelled => "bg-danger-subtle",
+                                                    AppointmentStatus.NoShow => "bg-warning-subtle",
+                                                    _ => "bg-secondary-subtle"
+                                                };
+                                                
+                                                string borderClass = appointment.Status switch
+                                                {
+                                                    AppointmentStatus.Scheduled => "border-primary",
+                                                    AppointmentStatus.Completed => "border-success",
+                                                    AppointmentStatus.Cancelled => "border-danger",
+                                                    AppointmentStatus.NoShow => "border-warning",
+                                                    _ => "border-secondary"
+                                                };
+                                                
+                                                <a href="@Url.Action("Details", "Appointment", new { id = appointment.AppointmentId })" class="text-decoration-none">
+                                                    <div class="calendar-event @bgClass border-start border-3 @borderClass">
+                                                        <div class="fw-bold text-dark">@appointment.AppointmentDate.ToString("h:mm tt")</div>
+                                                        <div class="text-truncate text-dark">@(appointment.Patient?.Name ?? "Unknown Patient")</div>
+                                                    </div>
+                                                </a>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <div class="d-flex justify-content-center align-items-center h-100">
+                                                <span class="text-muted small">No appointments</span>
+                                            </div>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+                <div class="card-footer bg-white p-3 d-flex justify-content-between align-items-center flex-wrap">
+                    <div class="mb-2 mb-md-0">
+                        <span class="badge badge-custom bg-primary-subtle text-primary me-1">Scheduled</span>
+                        <span class="badge badge-custom bg-success-subtle text-success me-1">Completed</span>
+                        <span class="badge badge-custom bg-danger-subtle text-danger me-1">Cancelled</span>
+                        <span class="badge badge-custom bg-warning-subtle text-warning">No-show</span>
+                    </div>
+                    <a asp-controller="Doctor" asp-action="Schedule" class="btn btn-outline-primary rounded-pill px-4">
+                        <i class="bi bi-calendar3-week me-1"></i> Full Schedule
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Status Update Modal -->
+<div class="modal fade" id="updateStatusModal" tabindex="-1" aria-labelledby="updateStatusModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content shadow">
+            <div class="modal-header border-0 pb-0">
+                <h5 class="modal-title fw-bold" id="updateStatusModalLabel">Update Appointment Status</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="updateStatusForm" asp-controller="Appointment" asp-action="UpdateStatus" method="post">
+                <div class="modal-body p-4">
+                    <input type="hidden" id="appointmentId" name="id" />
+                    <div class="mb-4">
+                        <label for="appointmentStatus" class="form-label fw-medium">Status</label>
+                        <select class="form-select form-select-lg rounded-3" id="appointmentStatus" name="status">
+                            @foreach (var status in Enum.GetValues(typeof(AppointmentStatus)))
+                            {
+                                <option value="@status">@status</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="statusNotes" class="form-label fw-medium">Notes (Optional)</label>
+                        <textarea class="form-control rounded-3" id="statusNotes" name="notes" rows="3" placeholder="Add any relevant notes about this status change..."></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer border-0 pt-0">
+                    <button type="button" class="btn btn-light rounded-pill px-4" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary rounded-pill px-4">
+                        <i class="bi bi-check2 me-1"></i> Update Status
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Initialize tooltips
+            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+            var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl)
+            });
+
+            // Handle status update modal
+            var updateStatusModal = document.getElementById('updateStatusModal')
+            if (updateStatusModal) {
+                updateStatusModal.addEventListener('show.bs.modal', function (event) {
+                    var button = event.relatedTarget
+                    var appointmentId = button.getAttribute('data-appointment-id')
+                    var appointmentIdInput = updateStatusModal.querySelector('#appointmentId')
+                    appointmentIdInput.value = appointmentId
+                })
+            }
+        });
+    </script>
+}
+
+@functions {
+    private int CalculateAge(DateTime birthDate)
+    {
+        var today = DateTime.Today;
+        var age = today.Year - birthDate.Year;
+        if (birthDate.Date > today.AddYears(-age)) age--;
+        return age;
+    }
+
+    private string GetTimeUntil(DateTime futureDate)
+    {
+        var timeSpan = futureDate - DateTime.Now;
+
+        if (timeSpan.TotalDays > 30)
+            return $"{(int)(timeSpan.TotalDays / 30)}m";
+        else if (timeSpan.TotalDays > 7)
+            return $"{(int)(timeSpan.TotalDays / 7)}w";
+        else if (timeSpan.TotalDays >= 1)
+            return $"{(int)timeSpan.TotalDays}d";
+        else if (timeSpan.TotalHours >= 1)
+            return $"{(int)timeSpan.TotalHours}h";
+        else
+            return $"{(int)timeSpan.TotalMinutes}m";
+    }
+
+    private int GetAppointmentDuration(Appointment appointment)
+    {
+        // This is a placeholder - in a real app, you'd get this from the doctor's settings
+        // or from a separate appointment duration field
+        return 30; // Default 30 minutes
+    }
+}

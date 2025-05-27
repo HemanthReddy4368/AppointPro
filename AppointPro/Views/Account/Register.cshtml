@@ -1,0 +1,152 @@
+﻿@model AppointPro.Models.RegisterViewModel
+
+@{
+    ViewData["Title"] = "Register";
+}
+
+@section Styles {
+    <style>
+        body {
+            background: linear-gradient(135deg, #e0eafc 0%, #cfdef3 100%);
+            min-height: 100vh;
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.85);
+            border-radius: 1.5rem;
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.18);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            animation: floatIn 1s cubic-bezier(.68, -0.55, .27, 1.55);
+        }
+
+        @@keyframes floatIn {
+            0% {
+                transform: translateY(40px) scale(0.95);
+                opacity: 0;
+            }
+
+            100% {
+                transform: translateY(0) scale(1);
+                opacity: 1;
+            }
+        }
+
+        .google-btn {
+            background: #fff;
+            color: #444;
+            border: 1px solid #ddd;
+            font-weight: 500;
+            transition: box-shadow 0.2s, color 0.2s, border-color 0.2s;
+        }
+
+            .google-btn:hover {
+                box-shadow: 0 2px 8px rgba(66, 133, 244, 0.15);
+                border-color: #4285f4;
+                color: #4285f4;
+            }
+
+        .google-icon {
+            width: 22px;
+            height: 22px;
+            margin-right: 10px;
+            vertical-align: middle;
+        }
+
+        .form-floating {
+            margin-bottom: 1rem;
+        }
+
+        .divider {
+            display: flex;
+            align-items: center;
+            text-align: center;
+            margin: 1.5rem 0;
+        }
+
+            .divider::before,
+            .divider::after {
+                content: '';
+                flex: 1;
+                border-bottom: 1px solid #ddd;
+            }
+
+            .divider::before {
+                margin-right: 1rem;
+            }
+
+            .divider::after {
+                margin-left: 1rem;
+            }
+    </style>
+}
+
+<div class="d-flex align-items-center justify-content-center" style="min-height: 80vh;">
+    <div class="glass-card p-4" style="width: 420px;">
+        <div class="text-center mb-4">
+            <img src="https://cdn-icons-png.flaticon.com/512/3177/3177361.png" alt="User" width="64" class="mb-2" />
+            <h3 class="fw-bold mb-1" style="letter-spacing:1px;">Create Account</h3>
+            <div class="text-muted mb-2" style="font-size:1rem;">Join AppointPro today</div>
+        </div>
+
+        <form asp-action="Register" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+            <!-- Hidden field for role, set to Patient by default -->
+            <input asp-for="Role" type="hidden" value="Patient" />
+
+            <div class="form-floating">
+                <input asp-for="Name" class="form-control" placeholder="Full Name" />
+                <label asp-for="Name">Full Name</label>
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+
+            <div class="form-floating">
+                <input asp-for="Email" class="form-control" placeholder="name@example.com" />
+                <label asp-for="Email">Email address</label>
+                <span asp-validation-for="Email" class="text-danger"></span>
+            </div>
+
+            <div class="form-floating">
+                <input asp-for="Password" class="form-control" type="password" placeholder="Password" />
+                <label asp-for="Password">Password</label>
+                <span asp-validation-for="Password" class="text-danger"></span>
+            </div>
+
+            <div class="form-floating">
+                <input asp-for="ConfirmPassword" class="form-control" type="password" placeholder="Confirm Password" />
+                <label asp-for="ConfirmPassword">Confirm Password</label>
+                <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+            </div>
+
+            <div class="d-grid mt-4">
+                <button type="submit" class="btn btn-primary btn-lg">Create Account</button>
+            </div>
+        </form>
+
+        <div class="divider">OR</div>
+
+        <div class="d-grid mb-3">
+            <a asp-action="GoogleLogin" class="btn google-btn btn-lg">
+                <img class="google-icon" src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/google/google-original.svg" alt="Google" />
+                Sign up with Google
+            </a>
+        </div>
+
+        <div class="text-center mt-3">
+            <span>Already have an account?</span>
+            <a asp-action="Login" class="text-decoration-none ms-1">Sign in</a>
+        </div>
+
+        <hr />
+        <p class="text-center text-muted mb-0" style="font-size: 0.92rem;">
+            By signing up, you agree to our <a href="#">Terms</a> and <a href="#">Privacy Policy</a>.
+        </p>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
